@@ -1,5 +1,73 @@
 package flat/lexer
 
-class {
+import flat/io/File
+import flat/log/Logger
 
+import flat/extensions/SyntaxStringFunctions
+
+class {
+  let static Logger log = Logger(Lexer.class)
+  let static Char[] STATEMENT_END_CHARS = ['\n', ';', '{', '[']
+
+  public async lex(File file) => LexResult {
+    external {
+      let resolve;
+      let reject;
+
+      const promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+    }
+
+    let result = LexResult(Array())
+
+    let stream = file
+      .createReadStream()
+      .on<String>("data", (data) => {
+        Lexer.log.trace("Received data from Stream \"#{file.nativeLocation}\" with count: #{data.count}")
+        let chunkResult = lexChunk(data)
+        result.statements.addAll(chunkResult.statements)
+      })
+      .on<String>("error", (error) => {
+        Lexer.log.trace("Received error from Stream \"#{file.nativeLocation}\" with count: #{error.count}")
+        external {
+          reject(#{Exception(error)});
+        }
+      })
+      .on("close", {
+        Lexer.log.trace("Stream \"#{file.nativeLocation}\" closed")
+        external {
+          resolve(#{result});
+        }
+      })
+
+    external {
+      return promise;
+    }
+  }
+
+  public lex(String contents) => LexResult {
+    return lexChunk(contents)
+  }
+
+  lexChunk(String contents) => LexResult {
+    var Int prevIndex = -1
+    var Int index = contents.findCharOnTopLevel(STATEMENT_END_CHARS)
+
+    let statements = Array<String>()
+
+    while (index != -1) {
+      let value = contents.substring(prevIndex + 1, index).trim()
+
+      if (value.count > 0) {
+        statements.add(value)
+      }
+
+      prevIndex = index
+      index = contents.findCharOnTopLevel(STATEMENT_END_CHARS, start: index + 1)
+    }
+
+    return LexResult(statements)
+  }
 }
