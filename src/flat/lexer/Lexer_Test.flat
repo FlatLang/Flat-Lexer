@@ -1,0 +1,11 @@
+package flat/lexer
+
+import flat/lexer/Lexer
+
+testable class {
+  test `can create`() {
+    let value = Lexer()
+
+    expect(value).toNotBe(null)
+  }
+}
