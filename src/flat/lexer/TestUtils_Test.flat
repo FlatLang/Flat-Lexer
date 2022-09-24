@@ -20,13 +20,13 @@ class TestUtils {
     })
 
     if (actual.count != expected.count) {
-      let missing = if (actual.count > expected.count) {
-        ". Missing: " + actual.skip(expected.count).join(", ")
+      let extra = if (actual.count > expected.count) {
+        "Missing: " + actual.skip(expected.count).join(", ")
       } else {
-        ""
+        "Extra: " + expected.skip(actual.count).join(", ")
       }
 
-      expect(actual.count).toBe(expected.count, "Expected #{expected.count} lexemes, but received #{actual.count} instead#{missing}")
+      expect(actual.count).toBe(expected.count, "Expected #{expected.count} lexemes, but received #{actual.count} instead. #{extra}")
     }
   }
 }
