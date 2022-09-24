@@ -7,7 +7,7 @@ import flat/extensions/SyntaxStringFunctions
 
 class {
   let static Logger log = Logger(Lexer.class)
-  let static Char[] STATEMENT_END_CHARS = ['\n', ';', '{', '[']
+  let static Char[] STATEMENT_END_CHARS = ['\n', '.', ';', '{', '}', '[', ']', '(', ')', '/', '*', '%', '=', ' ']
 
   public async lex(File file) => LexResult {
     external {
@@ -27,7 +27,7 @@ class {
       .on<String>("data", (data) => {
         Lexer.log.trace("Received data from Stream \"#{file.nativeLocation}\" with count: #{data.count}")
         let chunkResult = lexChunk(data)
-        result.statements.addAll(chunkResult.statements)
+        result.lexemes.addAll(chunkResult.lexemes)
       })
       .on<String>("error", (error) => {
         Lexer.log.trace("Received error from Stream \"#{file.nativeLocation}\" with count: #{error.count}")
@@ -55,19 +55,58 @@ class {
     var Int prevIndex = -1
     var Int index = contents.findCharOnTopLevel(STATEMENT_END_CHARS)
 
-    let statements = Array<String>()
+    var Int lineNumber = 1
+    var Int column = 1
+
+    let lexemes = Array<Lexeme>()
 
     while (index != -1) {
-      let value = contents.substring(prevIndex + 1, index).trim()
+      let value = contents.substring(prevIndex + 1, index)
+      let trimmedStart = value.trimStart()
+      let trimmed = trimmedStart.trimEnd()
 
-      if (value.count > 0) {
-        statements.add(value)
+      lexemes.add(
+        Lexeme(
+          buffer: contents.substring(prevIndex, prevIndex + 1 + (value.count - trimmedStart.count)),
+          value: trimmed,
+          location: Lexeme.Location(
+            lineNumber: lineNumber,
+            column: column
+          )
+        )
+      )
+
+      column += index - prevIndex
+      lineNumber += value.howMany('\n')
+
+      let char = contents[index]
+
+      match char {
+        '\n' => {
+          lineNumber++
+          column = 1
+        }
       }
 
       prevIndex = index
       index = contents.findCharOnTopLevel(STATEMENT_END_CHARS, start: index + 1)
     }
 
-    return LexResult(statements)
+    let value = contents.substring(prevIndex + 1)
+    let trimmedStart = value.trimStart()
+    let trimmed = trimmedStart.trimEnd()
+
+    lexemes.add(
+      Lexeme(
+        buffer: contents.substring(prevIndex, prevIndex + 1 + (value.count - trimmedStart.count)),
+        value: trimmed,
+        location: Lexeme.Location(
+          lineNumber: lineNumber,
+          column: column
+        )
+      )
+    )
+
+    return LexResult(lexemes)
   }
 }

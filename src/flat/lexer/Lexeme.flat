@@ -1,0 +1,12 @@
+package flat/lexer
+
+data class {
+  visible String value
+  visible String buffer
+  visible Location location
+
+  data class Location {
+    visible Int lineNumber
+    visible Int column
+  }
+}

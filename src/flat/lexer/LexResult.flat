@@ -1,5 +1,5 @@
 package flat/lexer
 
 data class {
-  visible String[] statements
+  visible Lexeme[] lexemes
 }
