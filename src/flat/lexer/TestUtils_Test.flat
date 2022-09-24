@@ -11,11 +11,11 @@ class TestUtils {
     Bool: checkLocation = false
   ) {
     actual.zip(expected, (a, e) => {
+      expect(a.value).toBe(e.value, "Expected lexeme value \"#{e.value}\", but received \"#{a.value}\" instead\n\n(actual lexeme: #{a})")
+      expect(a.buffer).toBe(e.buffer, "Expected lexeme buffer \"#{e.buffer}\", but received \"#{a.buffer}\" instead\n\n(actual lexeme: #{a})")
+
       if (checkLocation) {
-        expect(a).toBe(e)
-      } else {
-        expect(a.value).toBe(e.value, "Expected lexeme value \"#{e.value}\", but received \"#{a.value}\" instead")
-        expect(a.buffer).toBe(e.buffer, "Expected lexeme buffer \"#{e.buffer}\", but received \"#{a.buffer}\" instead")
+        expect<Object>(a.location).toBe(e.location, "Expected lexeme location \"#{e.location}\", but received \"#{a.location}\" instead\n\n(actual lexeme: #{a})")
       }
     })
 
