@@ -1,11 +1,141 @@
 package flat/lexer
 
 import flat/lexer/Lexer
+import flat/lexer/TestUtils_Test.TestUtils
 
 testable class {
-  test `can create`() {
-    let value = Lexer()
+  test `can lex basic package statement with location info`() {
+    let value = Lexer().lex("|
+      package flat/lexer
+      |")
 
-    expect(value).toNotBe(null)
+    let expected = LexResult(
+      lexemes: [
+        Lexeme(
+          value: "package",
+          buffer: "",
+          location: Lexeme.Location(
+            lineNumber: 1,
+            column: 1
+          )
+        ),
+        Lexeme(
+          value: "flat",
+          buffer: " ",
+          location: Lexeme.Location(
+            lineNumber: 1,
+            column: 9
+          )
+        ),
+        Lexeme(
+          value: "lexer",
+          buffer: "/",
+          location: Lexeme.Location(
+            lineNumber: 1,
+            column: 14
+          )
+        )
+      ]
+    )
+
+    expect(value).toBe(expected)
+  }
+
+  test `can lex basic package statement and import statement with location info`() {
+    let value = Lexer().lex("|
+      package flat/lexer
+
+      import flat/lexer/Lexer
+      |")
+
+    let expected = LexResult(
+      lexemes: [
+        Lexeme(
+          value: "package",
+          buffer: "",
+          location: Lexeme.Location(
+            lineNumber: 1,
+            column: 1
+          )
+        ),
+        Lexeme(
+          value: "flat",
+          buffer: " ",
+          location: Lexeme.Location(
+            lineNumber: 1,
+            column: 9
+          )
+        ),
+        Lexeme(
+          value: "lexer",
+          buffer: "/",
+          location: Lexeme.Location(
+            lineNumber: 1,
+            column: 14
+          )
+        ),
+        Lexeme(
+          value: "",
+          buffer: "\n",
+          location: Lexeme.Location(
+            lineNumber: 2,
+            column: 1
+          )
+        ),
+        Lexeme(
+          value: "import",
+          buffer: "\n",
+          location: Lexeme.Location(
+            lineNumber: 3,
+            column: 1
+          )
+        ),
+        Lexeme(
+          value: "flat",
+          buffer: " ",
+          location: Lexeme.Location(
+            lineNumber: 3,
+            column: 8
+          )
+        ),
+        Lexeme(
+          value: "lexer",
+          buffer: "/",
+          location: Lexeme.Location(
+            lineNumber: 3,
+            column: 13
+          )
+        ),
+        Lexeme(
+          value: "Lexer",
+          buffer: "/",
+          location: Lexeme.Location(
+            lineNumber: 3,
+            column: 19
+          )
+        )
+      ]
+    )
+
+    expect(value).toBe(expected)
+  }
+
+  test `can lex function call`() {
+    let value = Lexer().lex("|
+      parse(ParseRequest(sourceCode: test), value)
+      |")
+
+    let Lexeme[] expected = [
+      Lexeme(value: "parse", buffer: ""),
+      Lexeme(value: "ParseRequest", buffer: "("),
+      Lexeme(value: "sourceCode", buffer: "("),
+      Lexeme(value: "", buffer: ":"),
+      Lexeme(value: "test", buffer: " "),
+      Lexeme(value: ",", buffer: ")"),
+      Lexeme(value: "value", buffer: " "),
+      Lexeme(value: "", buffer: ")")
+    ]
+
+    TestUtils.expectLexemes(value.lexemes, expected)
   }
 }

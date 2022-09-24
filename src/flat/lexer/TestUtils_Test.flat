@@ -1,0 +1,32 @@
+package flat/lexer
+
+class {
+
+}
+
+class TestUtils {
+  public static expectLexemes(
+    Lexeme[] actual,
+    Lexeme[] expected,
+    Bool: checkLocation = false
+  ) {
+    actual.zip(expected, (a, e) => {
+      if (checkLocation) {
+        expect(a).toBe(e)
+      } else {
+        expect(a.value).toBe(e.value, "Expected lexeme value \"#{e.value}\", but received \"#{a.value}\" instead")
+        expect(a.buffer).toBe(e.buffer, "Expected lexeme buffer \"#{e.buffer}\", but received \"#{a.buffer}\" instead")
+      }
+    })
+
+    if (actual.count != expected.count) {
+      let missing = if (actual.count > expected.count) {
+        ". Missing: " + actual.skip(expected.count).join(", ")
+      } else {
+        ""
+      }
+
+      expect(actual.count).toBe(expected.count, "Expected #{expected.count} lexemes, but received #{actual.count} instead#{missing}")
+    }
+  }
+}
