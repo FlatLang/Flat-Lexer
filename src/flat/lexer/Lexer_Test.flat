@@ -5,10 +5,12 @@ import flat/lexer/Lexer
 import static flat/lexer/TestUtils_Test.TestUtils
 
 testable class {
-  test `can lex basic package statement with location info`() {
-    let value = Lexer().lex("|
-      package flat/lexer
-      |")
+  async test `can lex basic package statement with location info`() {
+    let value = Lexer.consumeLexemeStream(
+      Lexer().lex("|
+        package flat/lexer
+        |")
+    )
 
     let expected = [
       Lexeme(
@@ -40,12 +42,14 @@ testable class {
     expectLexemes(value.lexemes, expected, checkLocation: true)
   }
 
-  test `can lex basic package statement and import statement with location info`() {
-    let value = Lexer().lex("|
-      package flat/lexer
+  async test `can lex basic package statement and import statement with location info`() {
+    let value = Lexer.consumeLexemeStream(
+      Lexer().lex("|
+        package flat/lexer
 
-      import flat/lexer/Lexer
-      |")
+        import flat/lexer/Lexer
+        |")
+    )
 
     let Lexeme[] expected = [
       Lexeme(
@@ -117,10 +121,12 @@ testable class {
     expectLexemes(value.lexemes, expected, checkLocation: true)
   }
 
-  test `can lex function call`() {
-    let value = Lexer().lex("|
-      parse(ParseRequest(sourceCode: test), value)
-      |")
+  async test `can lex function call`() {
+    let value = Lexer.consumeLexemeStream(
+      Lexer().lex("|
+        parse(ParseRequest(sourceCode: test), value)
+        |")
+    )
 
     let Lexeme[] expected = [
       Lexeme(value: "parse", buffer: ""),

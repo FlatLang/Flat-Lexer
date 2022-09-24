@@ -2,6 +2,7 @@ package flat/lexer
 
 import flat/io/File
 import flat/log/Logger
+import flat/stream/Stream
 
 import flat/extensions/SyntaxStringFunctions
 
@@ -9,61 +10,56 @@ class {
   let static Logger log = Logger(Lexer.class)
   let static Char[] STATEMENT_END_CHARS = ['\n', '.', ';', '{', '}', '[', ']', '(', ')', '/', '*', '%', '=', ' ', ':']
 
-  public async lex(File file) => LexResult() {
-    external {
-      let resolve;
-      let reject;
+  public lex(File file) => lex(file.createReadStream())
 
-      const promise = new Promise((res, rej) => {
-        resolve = res;
-        reject = rej;
-      });
-    }
+  public lex(Stream dataStream) -> Stream {
+    let stream = Stream(true)
 
-    let result = LexResult(Array())
+    dataStream.on<String>("data", (data) => {
+      Lexer.log.trace("Received data from Stream with count: #{data.count}")
+      let chunkStream = lex(data)
 
-    let stream = file
-      .createReadStream()
-      .on<String>("data", (data) => {
-        Lexer.log.trace("Received data from Stream \"#{file.nativeLocation}\" with count: #{data.count}")
-        let chunkResult = lexChunk(data)
-        result.lexemes.addAll(chunkResult.lexemes)
-      })
-      .on<String>("error", (error) => {
-        Lexer.log.trace("Received error from Stream \"#{file.nativeLocation}\" with count: #{error.count}")
-        external {
-          reject(#{Exception(error)});
-        }
-      })
-      .on("close", {
-        Lexer.log.trace("Stream \"#{file.nativeLocation}\" closed")
-        external {
-          resolve(#{result});
-        }
-      })
+      chunkStream.on<Lexeme>("data", (lexeme) => {
+        Lexer.log.trace("Received lexeme from Lexeme Stream: #{lexeme}")
+        stream.emit("data", lexeme)$
+      })$
 
-    external {
-      return promise;
-    }
+      chunkStream.on<String>("error", (error) => {
+        Lexer.log.trace("Received error from Lexeme Stream: #{error}")
+        stream.emit("error", error)$
+      })$
+
+      chunkStream.on("close", {
+        Lexer.log.trace("Lexeme Stream closed")
+      })$
+    })$
+
+    dataStream.on<String>("error", (error) => {
+      Lexer.log.trace("Received error from Stream: #{error}")
+      stream.emit("error", error)$
+    })$
+
+    dataStream.on("close", {
+      Lexer.log.trace("Stream closed")
+      stream.emit("close")$
+    })$
+
+    return stream
   }
 
-  public lex(String contents) => LexResult() {
-    return lexChunk(contents)
-  }
+  public lex(String contents) -> Stream {
+    let stream = Stream(true)
 
-  lexChunk(String contents) => LexResult() {
     var Int prevIndex = -1
     var Int index = contents.findCharOnTopLevel(STATEMENT_END_CHARS)
 
     var Int lineNumber = 1
     var Int column = 1
 
-    let lexemes = Array<Lexeme>()
-
     while (index != -1) {
       let lexeme = createLexeme(contents, index, prevIndex, lineNumber, column)
 
-      lexemes.add(lexeme)
+      stream.emit("data", lexeme)$
 
       column += index - prevIndex
       lineNumber += lexeme.value.howMany('\n')
@@ -81,13 +77,13 @@ class {
       index = contents.findCharOnTopLevel(STATEMENT_END_CHARS, start: index + 1)
     }
 
-    let remainder = createLexeme(contents, index, prevIndex, lineNumber, column)
-
-    if (remainder) {
-      lexemes.add(remainder)
+    if (let remainder = createLexeme(contents, index, prevIndex, lineNumber, column)) {
+      stream.emit("data", remainder)$
     }
 
-    return LexResult(lexemes)
+    stream.emit("close")$
+
+    return stream
   }
 
   createLexeme(
@@ -111,6 +107,39 @@ class {
           column: column
         )
       )
+    }
+  }
+
+  public static async consumeLexemeStream(Stream stream) => LexResult() {
+    external {
+      let resolve;
+      let reject;
+
+      const promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+    }
+
+    let result = LexResult(Array())
+
+    stream
+      .on<Lexeme>("data", (data) => {
+        result.lexemes.add(data)
+      })
+      .on<String>("error", (error) => {
+        external {
+          reject(#{Exception(error)});
+        }
+      })
+      .on("close", {
+        external {
+          resolve(#{result});
+        }
+      })
+
+    external {
+      return promise;
     }
   }
 }
