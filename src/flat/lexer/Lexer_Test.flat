@@ -40,6 +40,80 @@ testable class {
     expectLexemes(value, expected, checkLocation: true)
   }
 
+  async test `can lex basic package statement with type info`() {
+    let value = Lexer().lex("|
+      package flat \"test\"
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "package",
+        buffer: "",
+        type: Lexeme.Type.IDENTIFIER
+      ),
+      Lexeme(
+        value: "flat",
+        buffer: " ",
+        type: Lexeme.Type.IDENTIFIER
+      ),
+      Lexeme(
+        value: "\"test\"",
+        buffer: " ",
+        type: Lexeme.Type.STRING
+      )
+    ]
+
+    expectLexemes(value, expected, checkType: true)
+  }
+
+  async test `can lex float`() {
+    let value = Lexer().lex("|
+      234.141
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "234.141",
+        buffer: "",
+        type: Lexeme.Type.FLOAT
+      )
+    ]
+
+    expectLexemes(value, expected, checkType: true)
+  }
+
+  async test `can lex integer`() {
+    let value = Lexer().lex("|
+      234
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "234",
+        buffer: "",
+        type: Lexeme.Type.INTEGER
+      )
+    ]
+
+    expectLexemes(value, expected, checkType: true)
+  }
+
+  async test `can lex String`() {
+    let value = Lexer().lex("|
+      \"this is a string\"
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "\"this is a string\"",
+        buffer: "",
+        type: Lexeme.Type.STRING
+      )
+    ]
+
+    expectLexemes(value, expected, checkType: true)
+  }
+
   async test `can lex basic package statement and import statement with location info`() {
     let value = Lexer().lex("|
       package flat/lexer

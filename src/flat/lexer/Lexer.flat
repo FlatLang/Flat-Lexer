@@ -57,14 +57,23 @@ class {
     var Int column = 1
 
     while (index != -1) {
+      let char = contents[index]
+
+      match char {
+        '.' => {
+          if (index < contents.count - 2 && contents[index + 1].isNumber) {
+            index = contents.findCharOnTopLevel(STATEMENT_END_CHARS, start: index + 1)
+            continue
+          }
+        }
+      }
+
       let lexeme = createLexeme(contents, index, prevIndex, lineNumber, column)
 
       stream.emit("data", lexeme)$
 
       column += index - prevIndex
       lineNumber += lexeme.value.howMany('\n')
-
-      let char = contents[index]
 
       match char {
         '\n' => {
@@ -102,11 +111,26 @@ class {
       return Lexeme(
         buffer: buffer,
         value: trimmed,
+        type: getTypeForValue(value),
         location: Lexeme.Location(
           lineNumber: lineNumber,
           column: column
         )
       )
+    }
+  }
+
+  getTypeForValue(String value) -> Int {
+    if (value.startsWith("//")) {
+      return Lexeme.Type.COMMENT
+    } else if (value.isSurroundedByQuotes()) {
+      return Lexeme.Type.STRING
+    } else if (value.isUnsignedInteger()) {
+      return Lexeme.Type.INTEGER
+    } else if (value.isUnsignedFloat()) {
+      return Lexeme.Type.FLOAT
+    } else {
+      return Lexeme.Type.IDENTIFIER
     }
   }
 }
