@@ -109,37 +109,4 @@ class {
       )
     }
   }
-
-  public static async consumeLexemeStream(Stream stream) => LexResult() {
-    external {
-      let resolve;
-      let reject;
-
-      const promise = new Promise((res, rej) => {
-        resolve = res;
-        reject = rej;
-      });
-    }
-
-    let result = LexResult(Array())
-
-    stream
-      .on<Lexeme>("data", (data) => {
-        result.lexemes.add(data)
-      })
-      .on<String>("error", (error) => {
-        external {
-          reject(#{Exception(error)});
-        }
-      })
-      .on("close", {
-        external {
-          resolve(#{result});
-        }
-      })
-
-    external {
-      return promise;
-    }
-  }
 }

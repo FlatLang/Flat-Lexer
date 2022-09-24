@@ -6,11 +6,9 @@ import static flat/lexer/TestUtils_Test.TestUtils
 
 testable class {
   async test `can lex basic package statement with location info`() {
-    let value = Lexer.consumeLexemeStream(
-      Lexer().lex("|
-        package flat/lexer
-        |")
-    )
+    let value = Lexer().lex("|
+      package flat/lexer
+      |").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(
@@ -39,17 +37,15 @@ testable class {
       )
     ]
 
-    expectLexemes(value.lexemes, expected, checkLocation: true)
+    expectLexemes(value, expected, checkLocation: true)
   }
 
   async test `can lex basic package statement and import statement with location info`() {
-    let value = Lexer.consumeLexemeStream(
-      Lexer().lex("|
-        package flat/lexer
+    let value = Lexer().lex("|
+      package flat/lexer
 
-        import flat/lexer/Lexer
-        |")
-    )
+      import flat/lexer/Lexer
+      |").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(
@@ -118,15 +114,13 @@ testable class {
       )
     ]
 
-    expectLexemes(value.lexemes, expected, checkLocation: true)
+    expectLexemes(value, expected, checkLocation: true)
   }
 
   async test `can lex function call`() {
-    let value = Lexer.consumeLexemeStream(
-      Lexer().lex("|
-        parse(ParseRequest(sourceCode: test), value)
-        |")
-    )
+    let value = Lexer().lex("|
+      parse(ParseRequest(sourceCode: test), value)
+      |").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(value: "parse", buffer: ""),
@@ -139,6 +133,6 @@ testable class {
       Lexeme(value: "", buffer: ")")
     ]
 
-    expectLexemes(value.lexemes, expected)
+    expectLexemes(value, expected)
   }
 }
