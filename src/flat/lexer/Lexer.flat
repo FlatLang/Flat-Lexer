@@ -8,7 +8,7 @@ import flat/extensions/SyntaxStringFunctions
 
 class {
   let static Logger log = Logger(Lexer.class)
-  let static Char[] STATEMENT_END_CHARS = ['\n', '.', ';', '{', '}', '[', ']', '(', ')', '/', '*', '%', '=', ' ', ':']
+  let static Char[] STATEMENT_END_CHARS = ['\n', '.', ';', '{', '}', '[', ']', '(', ')', '/', '*', '%', '<', '>', '=', ' ', ':', '!', '+', '-']
 
   public lex(File file) => lex(file.createReadStream())
 
@@ -59,13 +59,9 @@ class {
     while (index != -1) {
       let char = contents[index]
 
-      match char {
-        '.' => {
-          if (index < contents.count - 2 && contents[index + 1].isNumber) {
-            index = contents.findCharOnTopLevel(STATEMENT_END_CHARS, start: index + 1)
-            continue
-          }
-        }
+      if ((let skipTo = checkLexemeContinuation(contents, char, index)) != -2) {
+        index = skipTo
+        continue
       }
 
       let lexeme = createLexeme(contents, index, prevIndex, lineNumber, column)
@@ -93,6 +89,36 @@ class {
     stream.emit("close")$
 
     return stream
+  }
+
+  checkLexemeContinuation(String contents, Char char, Int index) -> Int => -2 {
+    if (index == contents.count - 1) {
+      return -2
+    }
+
+    switch char {
+      '.' => {
+        if (contents[index + 1].isNumber) {
+          return contents.findCharOnTopLevel(STATEMENT_END_CHARS, start: index + 1)
+        }
+      }
+      '+' => fallthrough
+      '-' => fallthrough
+      '*' => fallthrough
+      '/' => fallthrough
+      '&' => fallthrough
+      '|' => fallthrough
+      '%' => fallthrough
+      '^' => fallthrough
+      '<' => fallthrough
+      '>' => fallthrough
+      '!' => fallthrough
+      '=' => {
+        if (contents[index + 1] == '=') {
+          return index == contents.count - 2 ? -1 : index + 2
+        }
+      }
+    }
   }
 
   createLexeme(

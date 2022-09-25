@@ -114,6 +114,160 @@ testable class {
     expectLexemes(value, expected, checkType: true)
   }
 
+  async test `can lex greater-than-or-equal-to symbol when its not the last lexeme`() {
+    let value = Lexer().lex("|
+      >= hey
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: ">=",
+        buffer: ""
+      ),
+      Lexeme(
+        value: "hey",
+        buffer: " "
+      )
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can lex greater-than-or-equal-to symbol`() {
+    let value = Lexer().lex("|
+      >=
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: ">=",
+        buffer: ""
+      )
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can lex less-than-or-equal-to symbol`() {
+    let value = Lexer().lex("|
+      <=
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "<=",
+        buffer: ""
+      )
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can lex equivalence symbol`() {
+    let value = Lexer().lex("|
+      ==
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "==",
+        buffer: ""
+      )
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can lex non-equivalence symbol`() {
+    let value = Lexer().lex("|
+      !=
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "!=",
+        buffer: ""
+      )
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can lex modulo-equals symbol`() {
+    let value = Lexer().lex("|
+      %=
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "%=",
+        buffer: ""
+      )
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can lex divide-equals symbol`() {
+    let value = Lexer().lex("|
+      /=
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "/=",
+        buffer: ""
+      )
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can lex multiply-equals symbol`() {
+    let value = Lexer().lex("|
+      *=
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "*=",
+        buffer: ""
+      )
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can lex plus-equals symbol`() {
+    let value = Lexer().lex("|
+      +=
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "+=",
+        buffer: ""
+      )
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can lex minus-equals symbol`() {
+    let value = Lexer().lex("|
+      -=
+      |").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(
+        value: "-=",
+        buffer: ""
+      )
+    ]
+
+    expectLexemes(value, expected)
+  }
+
   async test `can lex basic package statement and import statement with location info`() {
     let value = Lexer().lex("|
       package flat/lexer
