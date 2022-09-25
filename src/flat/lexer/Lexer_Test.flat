@@ -40,4 +40,35 @@ testable class {
 
     expectTokens(value, expected, checkType: true)
   }
+
+  async test `can lex basic package statement with type info`() {
+    let value = Lexer().lex("|
+      package flat \"test\"
+      |").consumeAll<Token>("data")
+
+    let expected = [
+      Token(
+        value: "package",
+        type: Token.Type.IDENTIFIER
+      ),
+      Token(
+        value: " ",
+        type: Token.Type.WHITESPACE
+      ),
+      Token(
+        value: "flat",
+        type: Token.Type.IDENTIFIER
+      ),
+      Token(
+        value: " ",
+        type: Token.Type.WHITESPACE
+      ),
+      Token(
+        value: "\"test\"",
+        type: Token.Type.STRING
+      )
+    ]
+
+    expectTokens(value, expected, checkType: true)
+  }
 }
