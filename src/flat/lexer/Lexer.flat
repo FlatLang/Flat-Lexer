@@ -52,9 +52,7 @@ class {
     if (lexeme.value.startsWith("//")) {
       return Token.Type.COMMENT
     } else if (lexeme.value.trim().count == 0) {
-      external {
-        return #{Token.Type.WHITESPACE}; // FIXME: this goes crazy
-      }
+      return Token.Type.WS
     } else if (lexeme.value.isSurroundedByQuotes()) {
       return Token.Type.STRING
     } else if (lexeme.value.isUnsignedInteger()) {
