@@ -1,6 +1,7 @@
 package flat/lexer
 
 import flat/lexer/Lexer
+import flat/compiler/models/Lexeme
 
 import static flat/lexer/TestUtils_Test.TestUtils
 
@@ -36,74 +37,34 @@ testable class {
     expectLexemes(value, expected, checkLocation: true)
   }
 
-  async test `can lex basic package statement with type info`() {
-    let value = Lexer().lex("|
-      package flat \"test\"
-      |").consumeAll<Lexeme>("data")
-
-    let expected = [
-      Lexeme(
-        value: "package",
-        type: Lexeme.Type.IDENTIFIER
-      ),
-      Lexeme(
-        value: " ",
-        type: Lexeme.Type.WHITESPACE
-      ),
-      Lexeme(
-        value: "flat",
-        type: Lexeme.Type.IDENTIFIER
-      ),
-      Lexeme(
-        value: " ",
-        type: Lexeme.Type.WHITESPACE
-      ),
-      Lexeme(
-        value: "\"test\"",
-        type: Lexeme.Type.STRING
-      )
-    ]
-
-    expectLexemes(value, expected, checkType: true)
-  }
-
   async test `can lex float`() {
     let value = Lexer().lex("234.141").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "234.141",
-        type: Lexeme.Type.FLOAT
-      )
+      Lexeme(value: "234.141")
     ]
 
-    expectLexemes(value, expected, checkType: true)
+    expectLexemes(value, expected)
   }
 
   async test `can lex integer`() {
     let value = Lexer().lex("234").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "234",
-        type: Lexeme.Type.INTEGER
-      )
+      Lexeme(value: "234")
     ]
 
-    expectLexemes(value, expected, checkType: true)
+    expectLexemes(value, expected)
   }
 
   async test `can lex String`() {
     let value = Lexer().lex("\"this is a string\"").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "\"this is a string\"",
-        type: Lexeme.Type.STRING
-      )
+      Lexeme(value: "\"this is a string\"")
     ]
 
-    expectLexemes(value, expected, checkType: true)
+    expectLexemes(value, expected)
   }
 
   async test `can lex greater-than-or-equal-to symbol when its not the last lexeme`() {

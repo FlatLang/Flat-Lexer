@@ -1,5 +1,7 @@
 package flat/lexer
 
+import flat/compiler/models/Lexeme
+import flat/compiler/models/Token
 import flat/io/File
 import flat/log/Logger
 import flat/stream/Stream
@@ -8,7 +10,7 @@ import flat/extensions/SyntaxStringFunctions
 
 class {
   let static Logger log = Logger(Lexer.class)
-  let static Char[] DELIMITERS = ['.', ';', '{', '}', '[', ']', '(', ')', '/', '*', '%', '<', '>', '=', ' ', '\t', '\n', '\r', ':', '!', '+', '-']
+  let static Char[] DELIMITERS = ".;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
 
   public lex(File file) => lex(file.createReadStream())
 
@@ -190,32 +192,11 @@ class {
     if (value.count > 0) {
       return Lexeme(
         value: value,
-        type: getTypeForValue(value),
         location: Lexeme.Location(
           lineNumber: lineNumber,
           column: column
         )
       )
-    }
-  }
-
-  getTypeForValue(String value) -> Int {
-    if (value.startsWith("//")) {
-      return Lexeme.Type.COMMENT
-    } else if (value.trim().count == 0) {
-      external {
-        return #{Lexeme.Type.WHITESPACE}; // FIXME: this goes crazy
-      }
-    } else if (value.isSurroundedByQuotes()) {
-      return Lexeme.Type.STRING
-    } else if (value.isUnsignedInteger()) {
-      return Lexeme.Type.INTEGER
-    } else if (value.isUnsignedFloat()) {
-      return Lexeme.Type.FLOAT
-    } else if (value.isSymbol()) {
-      return Lexeme.Type.SYMBOL
-    } else {
-      return Lexeme.Type.IDENTIFIER
     }
   }
 }

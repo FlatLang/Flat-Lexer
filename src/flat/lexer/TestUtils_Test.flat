@@ -1,5 +1,7 @@
 package flat/lexer
 
+import flat/compiler/models/Lexeme
+
 class {
 
 }
@@ -14,9 +16,6 @@ class TestUtils {
     actual.zip(expected, (a, e, i) => {
       expect(a.value).toBe(e.value, "Expected lexeme value \"#{e.value}\" at index #{i}, but received \"#{a.value}\" instead\n\n(actual lexeme: #{a})")
 
-      if (checkType) {
-        expect<Object>(a.type).toBe(e.type, "Expected lexeme type \"#{e.type}\" at index #{i}, but received \"#{a.type}\" instead\n\n(actual lexeme: #{a})")
-      }
       if (checkLocation) {
         expect<Object>(a.location).toBe(e.location, "Expected lexeme location \"#{e.location}\" at index #{i}, but received \"#{a.location}\" instead\n\n(actual lexeme: #{a})")
       }
