@@ -6,5 +6,15 @@ import flat/compiler/models/Token
 import static flat/lexer/TestUtils_Test.TestUtils
 
 testable class {
+  async test `can lex a single-line comment`() {
+    let value = Lexer().lex("|
+      // this is a test
+      |").consumeAll<Token>("data")
 
+    let Token[] expected = [
+      Token(value: "// this is a test", type: Token.Type.COMMENT)
+    ]
+
+    expectTokens(value, expected, checkType: true)
+  }
 }

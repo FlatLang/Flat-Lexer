@@ -123,6 +123,15 @@ class {
       return -2
     }
 
+    // Handle single-line comment
+    switch char {
+      '/' => {
+        if (contents[index + 1] == '/') {
+          return contents.indexOf('\n', start: index + 2)
+        }
+      }
+    }
+
     switch char {
       '.' => {
         if (index > 0 && contents[index - 1].isNumber) {
