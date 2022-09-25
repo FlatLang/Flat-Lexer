@@ -12,36 +12,27 @@ class {
   let static Logger log = Logger(Lexer.class)
   let static Char[] DELIMITERS = ".;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
 
-  public lex(File file) => lex(file.createReadStream())
+  public lex(File file) => lexemesToTokens(Tokenizer().tokenize(file))
+  public lex(Stream dataStream) => lexemesToTokens(Tokenizer().tokenize(dataStream))
+  public lex(String contents) => lexemesToTokens(Tokenizer().tokenize(contents))
 
-  public lex(Stream dataStream) -> Stream {
+  public lexemesToTokens(Stream lexemeStream) -> Stream {
     let stream = Stream(true)
 
-    dataStream.on<String>("data", (data) => {
-      Lexer.log.trace("Received data from Stream with count: #{data.count}")
-      let chunkStream = lex(data)
+    lexemeStream.on<Lexeme>("data", (lexeme) => {
+      Lexer.log.trace("Received data from Lexeme Stream: #{lexeme}")
+      let token = createToken(lexeme)
+      Lexer.log.trace("Created Token from Lexeme: #{token}")
 
-      chunkStream.on<Lexeme>("data", (lexeme) => {
-        Lexer.log.trace("Received lexeme from Lexeme Stream: #{lexeme}")
-        stream.emit("data", lexeme)$
-      })$
-
-      chunkStream.on<String>("error", (error) => {
-        Lexer.log.trace("Received error from Lexeme Stream: #{error}")
-        stream.emit("error", error)$
-      })$
-
-      chunkStream.on("close", {
-        Lexer.log.trace("Lexeme Stream closed")
-      })$
+      stream.emit("data", token)$
     })$
 
-    dataStream.on<String>("error", (error) => {
-      Lexer.log.trace("Received error from Stream: #{error}")
+    lexemeStream.on<String>("error", (error) => {
+      Lexer.log.trace("Received error from Lexeme Stream: #{error}")
       stream.emit("error", error)$
     })$
 
-    dataStream.on("close", {
+    lexemeStream.on("close", {
       Lexer.log.trace("Stream closed")
       stream.emit("close")$
     })$
@@ -49,154 +40,31 @@ class {
     return stream
   }
 
-  public lex(String contents) -> Stream {
-    let stream = Stream(true)
-
-    var Int prevIndex = -1
-    var Int index = contents.findCharOnTopLevel(DELIMITERS)
-
-    var Int lineNumber = 1
-    var Int column = 1
-
-    while (index != -1) {
-      let char = contents[index]
-
-      if ((let prevSkipTo = checkPrevLexemeContinuation(contents, char, index)) != -2) {
-        index = prevSkipTo
-        continue
-      }
-
-      let prevLexeme = createLexeme(contents, index, prevIndex, lineNumber, column)
-
-      if (prevLexeme) {
-        stream.emit("data", prevLexeme)$
-
-        column += index - prevIndex
-        lineNumber += prevLexeme.value.howMany('\n')
-      }
-
-      var Int endIndex = index + 1
-
-      if ((let currentSkipTo = checkCurrentLexemeContinuation(contents, char, index)) != -2) {
-        endIndex = currentSkipTo
-      }
-
-      let currentLexeme = createLexeme(contents, endIndex, index - 1, lineNumber, column - 1)
-
-      if (currentLexeme) {
-        stream.emit("data", currentLexeme)$
-
-        if ((let lines = currentLexeme.value.howMany('\n')) > 0) {
-          lineNumber += lines
-
-          var Int offset = 0
-
-          while (offset < currentLexeme.value.count - 1) {
-            let val = currentLexeme.value[currentLexeme.value.count - 1 - offset]
-
-            if (val != ' ' && val != '\t') {
-              break
-            }
-
-            offset++
-          }
-
-          column = offset + 1
-        }
-      }
-
-      prevIndex = endIndex - 1
-      index = contents.findCharOnTopLevel(DELIMITERS, start: endIndex)
-    }
-
-    if (let remainder = createLexeme(contents, index, prevIndex, lineNumber, column)) {
-      stream.emit("data", remainder)$
-    }
-
-    stream.emit("close")$
-
-    return stream
+  createToken(Lexeme lexeme) -> Token {
+    return Token(
+      value: lexeme.value,
+      location: lexeme.location,
+      type: getTypeForLexeme(lexeme)
+    )
   }
 
-  checkPrevLexemeContinuation(String contents, Char char, Int index) -> Int => -2 {
-    if (index == contents.count - 1) {
-      return -2
-    }
-
-    switch char {
-      '.' => {
-        if (index > 0 && contents[index - 1].isNumber) {
-          var Int offset = 0
-
-          while ((index + offset + 1 < contents.count) && (contents[index + offset + 1].isNumber)) {
-            offset++
-          }
-
-          if ((index + offset) == (contents.count - 1)) {
-            return -1
-          } else {
-            return index + offset + 1
-          }
-        }
+  getTypeForLexeme(Lexeme lexeme) -> Int {
+    if (lexeme.value.startsWith("//")) {
+      return Token.Type.COMMENT
+    } else if (lexeme.value.trim().count == 0) {
+      external {
+        return #{Token.Type.WHITESPACE}; // FIXME: this goes crazy
       }
-    }
-
-    switch char {
-      '+' => '-' => '*' => '/' => '&' => '|' => '%' => '^' => '<' => '>' => '!' => '=' => {
-        if (contents[index + 1] == '=') {
-          return index == contents.count - 2 ? -1 : index + 2
-        }
-      }
-    }
-  }
-
-  checkCurrentLexemeContinuation(String contents, Char char, Int index) -> Int => -2 {
-    if (index == contents.count - 1) {
-      return -2
-    }
-
-    switch char {
-      '+' => '-' => '*' => '/' => '&' => '|' => '%' => '^' => '<' => '>' => '!' => '=' => {
-        if (contents[index + 1] == '=') {
-          return index == contents.count - 2 ? -1 : index + 2
-        }
-      }
-    }
-
-    switch char {
-      ' ' => '\t' => '\r' => '\n' => {
-        var Int offset = 0
-
-        while ((index + offset + 1 < contents.count) && (contents[index + offset + 1].isWhitespace)) {
-          offset++
-        }
-
-        if ((index + offset) == (contents.count - 1)) {
-          return -1
-        } else {
-          return index + offset + 1
-        }
-      }
-    }
-  }
-
-  createLexeme(
-    String contents,
-    Int index,
-    Int prevIndex,
-    Int lineNumber,
-    Int column
-  ) -> Lexeme => null {
-    let value = contents.substring(prevIndex + 1, index == -1 ? contents.count : index)
-
-    if (value.count > 0) {
-      return Lexeme(
-        value: value,
-        location: Lexeme.Location(
-          lineNumber: lineNumber,
-          column: column
-        )
-      )
+    } else if (lexeme.value.isSurroundedByQuotes()) {
+      return Token.Type.STRING
+    } else if (lexeme.value.isUnsignedInteger()) {
+      return Token.Type.INTEGER
+    } else if (lexeme.value.isUnsignedFloat()) {
+      return Token.Type.FLOAT
+    } else if (lexeme.value.isSymbol()) {
+      return Token.Type.SYMBOL
+    } else {
+      return Token.Type.IDENTIFIER
     }
   }
 }

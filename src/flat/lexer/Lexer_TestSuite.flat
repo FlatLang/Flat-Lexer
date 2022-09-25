@@ -7,6 +7,7 @@ import flat/io/FancyOutputStream
 import flat/lexer/Lexer
 
 [TestSuite [
+  Tokenizer_Test,
   Lexer_Test
 ]]
 class {
