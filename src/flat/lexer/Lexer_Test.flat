@@ -13,27 +13,23 @@ testable class {
     let expected = [
       Lexeme(
         value: "package",
-        buffer: "",
-        location: Lexeme.Location(
-          lineNumber: 1,
-          column: 1
-        )
+        location: Lexeme.Location(lineNumber: 1, column: 1)
+      ),
+      Lexeme(
+        value: " ",
+        location: Lexeme.Location(lineNumber: 1, column: 8)
       ),
       Lexeme(
         value: "flat",
-        buffer: " ",
-        location: Lexeme.Location(
-          lineNumber: 1,
-          column: 9
-        )
+        location: Lexeme.Location(lineNumber: 1, column: 9)
+      ),
+      Lexeme(
+        value: "/",
+        location: Lexeme.Location(lineNumber: 1, column: 13)
       ),
       Lexeme(
         value: "lexer",
-        buffer: "/",
-        location: Lexeme.Location(
-          lineNumber: 1,
-          column: 14
-        )
+        location: Lexeme.Location(lineNumber: 1, column: 14)
       )
     ]
 
@@ -48,17 +44,22 @@ testable class {
     let expected = [
       Lexeme(
         value: "package",
-        buffer: "",
         type: Lexeme.Type.IDENTIFIER
+      ),
+      Lexeme(
+        value: " ",
+        type: Lexeme.Type.WHITESPACE
       ),
       Lexeme(
         value: "flat",
-        buffer: " ",
         type: Lexeme.Type.IDENTIFIER
       ),
       Lexeme(
+        value: " ",
+        type: Lexeme.Type.WHITESPACE
+      ),
+      Lexeme(
         value: "\"test\"",
-        buffer: " ",
         type: Lexeme.Type.STRING
       )
     ]
@@ -67,14 +68,11 @@ testable class {
   }
 
   async test `can lex float`() {
-    let value = Lexer().lex("|
-      234.141
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("234.141").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(
         value: "234.141",
-        buffer: "",
         type: Lexeme.Type.FLOAT
       )
     ]
@@ -83,14 +81,11 @@ testable class {
   }
 
   async test `can lex integer`() {
-    let value = Lexer().lex("|
-      234
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("234").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(
         value: "234",
-        buffer: "",
         type: Lexeme.Type.INTEGER
       )
     ]
@@ -99,14 +94,11 @@ testable class {
   }
 
   async test `can lex String`() {
-    let value = Lexer().lex("|
-      \"this is a string\"
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("\"this is a string\"").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(
         value: "\"this is a string\"",
-        buffer: "",
         type: Lexeme.Type.STRING
       )
     ]
@@ -115,154 +107,138 @@ testable class {
   }
 
   async test `can lex greater-than-or-equal-to symbol when its not the last lexeme`() {
-    let value = Lexer().lex("|
-      >= hey
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex(">= hey").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: ">=",
-        buffer: ""
-      ),
-      Lexeme(
-        value: "hey",
-        buffer: " "
-      )
+      Lexeme(value: ">="),
+      Lexeme(value: " "),
+      Lexeme(value: "hey")
     ]
 
     expectLexemes(value, expected)
   }
 
   async test `can lex greater-than-or-equal-to symbol`() {
-    let value = Lexer().lex("|
-      >=
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex(">=").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: ">=",
-        buffer: ""
-      )
+      Lexeme(value: ">=")
     ]
 
     expectLexemes(value, expected)
   }
 
   async test `can lex less-than-or-equal-to symbol`() {
-    let value = Lexer().lex("|
-      <=
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("<=").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "<=",
-        buffer: ""
-      )
+      Lexeme(value: "<=")
     ]
 
     expectLexemes(value, expected)
   }
 
   async test `can lex equivalence symbol`() {
-    let value = Lexer().lex("|
-      ==
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("==").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "==",
-        buffer: ""
-      )
+      Lexeme(value: "==")
     ]
 
     expectLexemes(value, expected)
   }
 
   async test `can lex non-equivalence symbol`() {
-    let value = Lexer().lex("|
-      !=
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("!=").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "!=",
-        buffer: ""
-      )
+      Lexeme(value: "!=")
     ]
 
     expectLexemes(value, expected)
   }
 
   async test `can lex modulo-equals symbol`() {
-    let value = Lexer().lex("|
-      %=
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("%=").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "%=",
-        buffer: ""
-      )
+      Lexeme(value: "%=")
     ]
 
     expectLexemes(value, expected)
   }
 
   async test `can lex divide-equals symbol`() {
-    let value = Lexer().lex("|
-      /=
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("/=").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "/=",
-        buffer: ""
-      )
+      Lexeme(value: "/=")
     ]
 
     expectLexemes(value, expected)
   }
 
   async test `can lex multiply-equals symbol`() {
-    let value = Lexer().lex("|
-      *=
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("*=").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "*=",
-        buffer: ""
-      )
+      Lexeme(value: "*=")
     ]
 
     expectLexemes(value, expected)
   }
 
   async test `can lex plus-equals symbol`() {
-    let value = Lexer().lex("|
-      +=
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("+=").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "+=",
-        buffer: ""
-      )
+      Lexeme(value: "+=")
     ]
 
     expectLexemes(value, expected)
   }
 
   async test `can lex minus-equals symbol`() {
-    let value = Lexer().lex("|
-      -=
-      |").consumeAll<Lexeme>("data")
+    let value = Lexer().lex("-=").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(
-        value: "-=",
-        buffer: ""
-      )
+      Lexeme(value: "-=")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `handles no whitespace between lexemes`() {
+    let value = Lexer().lex("this+that").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "this"),
+      Lexeme(value: "+"),
+      Lexeme(value: "that")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `handles first lexeme as a symbol`() {
+    let value = Lexer().lex("+that").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "+"),
+      Lexeme(value: "that")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `handles preceding newlines`() {
+    let value = Lexer().lex("\n\nthis+that").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "\n\n"),
+      Lexeme(value: "this"),
+      Lexeme(value: "+"),
+      Lexeme(value: "that")
     ]
 
     expectLexemes(value, expected)
@@ -278,67 +254,55 @@ testable class {
     let Lexeme[] expected = [
       Lexeme(
         value: "package",
-        buffer: "",
-        location: Lexeme.Location(
-          lineNumber: 1,
-          column: 1
-        )
+        location: Lexeme.Location(lineNumber: 1, column: 1)
+      ),
+      Lexeme(
+        value: " ",
+        location: Lexeme.Location(lineNumber: 1, column: 8)
       ),
       Lexeme(
         value: "flat",
-        buffer: " ",
-        location: Lexeme.Location(
-          lineNumber: 1,
-          column: 9
-        )
+        location: Lexeme.Location(lineNumber: 1, column: 9)
+      ),
+      Lexeme(
+        value: "/",
+        location: Lexeme.Location(lineNumber: 1, column: 13)
       ),
       Lexeme(
         value: "lexer",
-        buffer: "/",
-        location: Lexeme.Location(
-          lineNumber: 1,
-          column: 14
-        )
+        location: Lexeme.Location(lineNumber: 1, column: 14)
       ),
       Lexeme(
-        value: "",
-        buffer: "\n",
-        location: Lexeme.Location(
-          lineNumber: 2,
-          column: 1
-        )
+        value: "\n\n",
+        location: Lexeme.Location(lineNumber: 1, column: 19)
       ),
       Lexeme(
         value: "import",
-        buffer: "\n",
-        location: Lexeme.Location(
-          lineNumber: 3,
-          column: 1
-        )
+        location: Lexeme.Location(lineNumber: 3, column: 1)
+      ),
+      Lexeme(
+        value: " ",
+        location: Lexeme.Location(lineNumber: 3, column: 7)
       ),
       Lexeme(
         value: "flat",
-        buffer: " ",
-        location: Lexeme.Location(
-          lineNumber: 3,
-          column: 8
-        )
+        location: Lexeme.Location(lineNumber: 3, column: 8)
+      ),
+      Lexeme(
+        value: "/",
+        location: Lexeme.Location(lineNumber: 3, column: 12)
       ),
       Lexeme(
         value: "lexer",
-        buffer: "/",
-        location: Lexeme.Location(
-          lineNumber: 3,
-          column: 13
-        )
+        location: Lexeme.Location(lineNumber: 3, column: 13)
+      ),
+      Lexeme(
+        value: "/",
+        location: Lexeme.Location(lineNumber: 3, column: 18)
       ),
       Lexeme(
         value: "Lexer",
-        buffer: "/",
-        location: Lexeme.Location(
-          lineNumber: 3,
-          column: 19
-        )
+        location: Lexeme.Location(lineNumber: 3, column: 19)
       )
     ]
 
@@ -351,14 +315,19 @@ testable class {
       |").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
-      Lexeme(value: "parse", buffer: ""),
-      Lexeme(value: "ParseRequest", buffer: "("),
-      Lexeme(value: "sourceCode", buffer: "("),
-      Lexeme(value: "", buffer: ":"),
-      Lexeme(value: "test", buffer: " "),
-      Lexeme(value: ",", buffer: ")"),
-      Lexeme(value: "value", buffer: " "),
-      Lexeme(value: "", buffer: ")")
+      Lexeme(value: "parse"),
+      Lexeme(value: "("),
+      Lexeme(value: "ParseRequest"),
+      Lexeme(value: "("),
+      Lexeme(value: "sourceCode"),
+      Lexeme(value: ":"),
+      Lexeme(value: " "),
+      Lexeme(value: "test"),
+      Lexeme(value: ")"),
+      Lexeme(value: ","),
+      Lexeme(value: " "),
+      Lexeme(value: "value"),
+      Lexeme(value: ")")
     ]
 
     expectLexemes(value, expected)

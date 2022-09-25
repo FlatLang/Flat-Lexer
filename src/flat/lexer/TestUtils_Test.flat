@@ -11,15 +11,14 @@ class TestUtils {
     Bool: checkType = false,
     Bool: checkLocation = false
   ) {
-    actual.zip(expected, (a, e) => {
-      expect(a.value).toBe(e.value, "Expected lexeme value \"#{e.value}\", but received \"#{a.value}\" instead\n\n(actual lexeme: #{a})")
-      expect(a.buffer).toBe(e.buffer, "Expected lexeme buffer \"#{e.buffer}\", but received \"#{a.buffer}\" instead\n\n(actual lexeme: #{a})")
+    actual.zip(expected, (a, e, i) => {
+      expect(a.value).toBe(e.value, "Expected lexeme value \"#{e.value}\" at index #{i}, but received \"#{a.value}\" instead\n\n(actual lexeme: #{a})")
 
       if (checkType) {
-        expect<Object>(a.type).toBe(e.type, "Expected lexeme type \"#{e.type}\", but received \"#{a.type}\" instead\n\n(actual lexeme: #{a})")
+        expect<Object>(a.type).toBe(e.type, "Expected lexeme type \"#{e.type}\" at index #{i}, but received \"#{a.type}\" instead\n\n(actual lexeme: #{a})")
       }
       if (checkLocation) {
-        expect<Object>(a.location).toBe(e.location, "Expected lexeme location \"#{e.location}\", but received \"#{a.location}\" instead\n\n(actual lexeme: #{a})")
+        expect<Object>(a.location).toBe(e.location, "Expected lexeme location \"#{e.location}\" at index #{i}, but received \"#{a.location}\" instead\n\n(actual lexeme: #{a})")
       }
     })
 

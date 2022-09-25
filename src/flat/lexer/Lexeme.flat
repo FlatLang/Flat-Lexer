@@ -2,7 +2,6 @@ package flat/lexer
 
 data class {
   visible String value
-  visible String buffer
   visible Location location
   visible Int type
 
@@ -17,5 +16,7 @@ data class {
     let visible static Int FLOAT = 3
     let visible static Int STRING = 4
     let visible static Int COMMENT = 5
+    let visible static Int WHITESPACE = 6
+    let visible static Int SYMBOL = 7
   }
 }

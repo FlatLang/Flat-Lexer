@@ -8,7 +8,7 @@ import flat/extensions/SyntaxStringFunctions
 
 class {
   let static Logger log = Logger(Lexer.class)
-  let static Char[] STATEMENT_END_CHARS = ['\n', '.', ';', '{', '}', '[', ']', '(', ')', '/', '*', '%', '<', '>', '=', ' ', ':', '!', '+', '-']
+  let static Char[] DELIMITERS = ['.', ';', '{', '}', '[', ']', '(', ')', '/', '*', '%', '<', '>', '=', ' ', '\t', '\n', '\r', ':', '!', '+', '-']
 
   public lex(File file) => lex(file.createReadStream())
 
@@ -51,7 +51,7 @@ class {
     let stream = Stream(true)
 
     var Int prevIndex = -1
-    var Int index = contents.findCharOnTopLevel(STATEMENT_END_CHARS)
+    var Int index = contents.findCharOnTopLevel(DELIMITERS)
 
     var Int lineNumber = 1
     var Int column = 1
@@ -59,27 +59,52 @@ class {
     while (index != -1) {
       let char = contents[index]
 
-      if ((let skipTo = checkLexemeContinuation(contents, char, index)) != -2) {
-        index = skipTo
+      if ((let prevSkipTo = checkPrevLexemeContinuation(contents, char, index)) != -2) {
+        index = prevSkipTo
         continue
       }
 
-      let lexeme = createLexeme(contents, index, prevIndex, lineNumber, column)
+      let prevLexeme = createLexeme(contents, index, prevIndex, lineNumber, column)
 
-      stream.emit("data", lexeme)$
+      if (prevLexeme) {
+        stream.emit("data", prevLexeme)$
 
-      column += index - prevIndex
-      lineNumber += lexeme.value.howMany('\n')
+        column += index - prevIndex
+        lineNumber += prevLexeme.value.howMany('\n')
+      }
 
-      match char {
-        '\n' => {
-          lineNumber++
-          column = 1
+      var Int endIndex = index + 1
+
+      if ((let currentSkipTo = checkCurrentLexemeContinuation(contents, char, index)) != -2) {
+        endIndex = currentSkipTo
+      }
+
+      let currentLexeme = createLexeme(contents, endIndex, index - 1, lineNumber, column - 1)
+
+      if (currentLexeme) {
+        stream.emit("data", currentLexeme)$
+
+        if ((let lines = currentLexeme.value.howMany('\n')) > 0) {
+          lineNumber += lines
+
+          var Int offset = 0
+
+          while (offset < currentLexeme.value.count - 1) {
+            let val = currentLexeme.value[currentLexeme.value.count - 1 - offset]
+
+            if (val != ' ' && val != '\t') {
+              break
+            }
+
+            offset++
+          }
+
+          column = offset + 1
         }
       }
 
-      prevIndex = index
-      index = contents.findCharOnTopLevel(STATEMENT_END_CHARS, start: index + 1)
+      prevIndex = endIndex - 1
+      index = contents.findCharOnTopLevel(DELIMITERS, start: endIndex)
     }
 
     if (let remainder = createLexeme(contents, index, prevIndex, lineNumber, column)) {
@@ -91,31 +116,63 @@ class {
     return stream
   }
 
-  checkLexemeContinuation(String contents, Char char, Int index) -> Int => -2 {
+  checkPrevLexemeContinuation(String contents, Char char, Int index) -> Int => -2 {
     if (index == contents.count - 1) {
       return -2
     }
 
     switch char {
       '.' => {
-        if (contents[index + 1].isNumber) {
-          return contents.findCharOnTopLevel(STATEMENT_END_CHARS, start: index + 1)
+        if (index > 0 && contents[index - 1].isNumber) {
+          var Int offset = 0
+
+          while ((index + offset + 1 < contents.count) && (contents[index + offset + 1].isNumber)) {
+            offset++
+          }
+
+          if ((index + offset) == (contents.count - 1)) {
+            return -1
+          } else {
+            return index + offset + 1
+          }
         }
       }
-      '+' => fallthrough
-      '-' => fallthrough
-      '*' => fallthrough
-      '/' => fallthrough
-      '&' => fallthrough
-      '|' => fallthrough
-      '%' => fallthrough
-      '^' => fallthrough
-      '<' => fallthrough
-      '>' => fallthrough
-      '!' => fallthrough
-      '=' => {
+    }
+
+    switch char {
+      '+' => '-' => '*' => '/' => '&' => '|' => '%' => '^' => '<' => '>' => '!' => '=' => {
         if (contents[index + 1] == '=') {
           return index == contents.count - 2 ? -1 : index + 2
+        }
+      }
+    }
+  }
+
+  checkCurrentLexemeContinuation(String contents, Char char, Int index) -> Int => -2 {
+    if (index == contents.count - 1) {
+      return -2
+    }
+
+    switch char {
+      '+' => '-' => '*' => '/' => '&' => '|' => '%' => '^' => '<' => '>' => '!' => '=' => {
+        if (contents[index + 1] == '=') {
+          return index == contents.count - 2 ? -1 : index + 2
+        }
+      }
+    }
+
+    switch char {
+      ' ' => '\t' => '\r' => '\n' => {
+        var Int offset = 0
+
+        while ((index + offset + 1 < contents.count) && (contents[index + offset + 1].isWhitespace)) {
+          offset++
+        }
+
+        if ((index + offset) == (contents.count - 1)) {
+          return -1
+        } else {
+          return index + offset + 1
         }
       }
     }
@@ -129,14 +186,10 @@ class {
     Int column
   ) -> Lexeme => null {
     let value = contents.substring(prevIndex + 1, index == -1 ? contents.count : index)
-    let trimmedStart = value.trimStart()
-    let trimmed = trimmedStart.trimEnd()
-    let buffer = contents.substring(prevIndex, prevIndex + 1 + (value.count - trimmedStart.count))
 
-    if (value.count > 0 || buffer.count > 0) {
+    if (value.count > 0) {
       return Lexeme(
-        buffer: buffer,
-        value: trimmed,
+        value: value,
         type: getTypeForValue(value),
         location: Lexeme.Location(
           lineNumber: lineNumber,
@@ -149,12 +202,18 @@ class {
   getTypeForValue(String value) -> Int {
     if (value.startsWith("//")) {
       return Lexeme.Type.COMMENT
+    } else if (value.trim().count == 0) {
+      external {
+        return #{Lexeme.Type.WHITESPACE}; // FIXME: this goes crazy
+      }
     } else if (value.isSurroundedByQuotes()) {
       return Lexeme.Type.STRING
     } else if (value.isUnsignedInteger()) {
       return Lexeme.Type.INTEGER
     } else if (value.isUnsignedFloat()) {
       return Lexeme.Type.FLOAT
+    } else if (value.isSymbol()) {
+      return Lexeme.Type.SYMBOL
     } else {
       return Lexeme.Type.IDENTIFIER
     }
