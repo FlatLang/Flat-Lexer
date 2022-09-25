@@ -66,12 +66,10 @@ class {
         continue
       }
 
-      let prevLexeme = createLexeme(contents, index, prevIndex, lineNumber, column)
-
-      if (prevLexeme) {
+      if (let prevLexeme = createLexeme(contents, prevIndex, index, lineNumber, column)) {
         stream.emit("data", prevLexeme)$
 
-        column += index - prevIndex
+        column += prevLexeme.value.count
         lineNumber += prevLexeme.value.howMany('\n')
       }
 
@@ -81,9 +79,7 @@ class {
         endIndex = currentSkipTo
       }
 
-      let currentLexeme = createLexeme(contents, endIndex, index - 1, lineNumber, column - 1)
-
-      if (currentLexeme) {
+      if (let currentLexeme = createLexeme(contents, index - 1, endIndex, lineNumber, column)) {
         stream.emit("data", currentLexeme)$
 
         if ((let lines = currentLexeme.value.howMany('\n')) > 0) {
@@ -102,6 +98,8 @@ class {
           }
 
           column = offset + 1
+        } else {
+          column += currentLexeme.value.count
         }
       }
 
@@ -109,8 +107,10 @@ class {
       index = contents.findCharOnTopLevel(DELIMITERS, start: endIndex)
     }
 
-    if (let remainder = createLexeme(contents, index, prevIndex, lineNumber, column)) {
-      stream.emit("data", remainder)$
+    if (prevIndex != -2) {
+      if (let remainder = createLexeme(contents, prevIndex, index, lineNumber, column)) {
+        stream.emit("data", remainder)$
+      }
     }
 
     stream.emit("close")$
@@ -191,8 +191,8 @@ class {
 
   createLexeme(
     String contents,
-    Int index,
     Int prevIndex,
+    Int index,
     Int lineNumber,
     Int column
   ) -> Lexeme => null {
