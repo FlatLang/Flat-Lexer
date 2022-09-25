@@ -320,4 +320,45 @@ testable class {
 
     expectLexemes(value, expected)
   }
+
+  async test `can tokenize single multi-line comment`() {
+    let value = Tokenizer().tokenize("|
+      /* this is a test */
+      |").consumeAll<Lexeme>("data")
+
+    let Lexeme[] expected = [
+      Lexeme(value: "/* this is a test */")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize two multi-line comments`() {
+    let value = Tokenizer().tokenize("|
+      /* this is a test
+
+      */
+      /* this is another test
+
+        aoeu
+      /**/
+      |").consumeAll<Lexeme>("data")
+
+    let Lexeme[] expected = [
+      Lexeme(value: "|
+        /* this is a test
+
+        */
+        |"),
+      Lexeme(value: "\n"),
+      Lexeme(value: "|
+        /* this is another test
+
+          aoeu
+        /**/
+        |"),
+    ]
+
+    expectLexemes(value, expected)
+  }
 }

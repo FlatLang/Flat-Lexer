@@ -51,6 +51,8 @@ class {
   getTypeForLexeme(Lexeme lexeme) -> Int {
     if (lexeme.value.startsWith("//")) {
       return Token.Type.COMMENT
+    } else if (lexeme.value.startsWith("/*")) {
+      return Token.Type.COMMENT
     } else if (lexeme.value.trim().count == 0) {
       return Token.Type.WS
     } else if (lexeme.value.isSurroundedByQuotes()) {

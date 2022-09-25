@@ -17,4 +17,27 @@ testable class {
 
     expectTokens(value, expected, checkType: true)
   }
+
+  async test `can lex a multi-line comment`() {
+    let value = Lexer().lex("|
+      /* this is a test
+
+         hey
+      */
+      |").consumeAll<Token>("data")
+
+    let Token[] expected = [
+      Token(
+        value: "|
+          /* this is a test
+
+             hey
+          */
+          |",
+        type: Token.Type.COMMENT
+      )
+    ]
+
+    expectTokens(value, expected, checkType: true)
+  }
 }
