@@ -20,20 +20,20 @@ class {
     let stream = Stream(true)
 
     lexemeStream.on<Lexeme>("data", (lexeme) => {
-      Lexer.log.trace("Received data from Lexeme Stream: #{lexeme}")
+      Lexer.log.traceFunc({"Received data from Lexeme Stream: #{lexeme}"})
       let token = createToken(lexeme)
-      Lexer.log.trace("Created Token from Lexeme: #{token}")
+      Lexer.log.traceFunc({"Created Token from Lexeme: #{token}"})
 
       stream.emit("data", token)$
     })$
 
     lexemeStream.on<String>("error", (error) => {
-      Lexer.log.trace("Received error from Lexeme Stream: #{error}")
+      Lexer.log.traceFunc({"Received error from Lexeme Stream: #{error}"})
       stream.emit("error", error)$
     })$
 
     lexemeStream.on("close", {
-      Lexer.log.trace("Stream closed")
+      Lexer.log.traceFunc({"Stream closed"})
       stream.emit("close")$
     })$
 

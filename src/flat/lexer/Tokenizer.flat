@@ -18,31 +18,31 @@ class {
     let stream = Stream(true)
 
     dataStream.on<String>("data", (data) => {
-      Lexer.log.trace("Received data from Stream with count: #{data.count}")
+      Lexer.log.traceFunc({"Received data from Stream with count: #{data.count}"})
       let chunkStream = tokenize(data)
 
       chunkStream.on<Lexeme>("data", (lexeme) => {
-        Lexer.log.trace("Received lexeme from Lexeme Stream: #{lexeme}")
+        Lexer.log.traceFunc({"Received lexeme from Lexeme Stream: #{lexeme}"})
         stream.emit("data", lexeme)$
       })$
 
       chunkStream.on<String>("error", (error) => {
-        Lexer.log.trace("Received error from Lexeme Stream: #{error}")
+        Lexer.log.traceFunc({"Received error from Lexeme Stream: #{error}"})
         stream.emit("error", error)$
       })$
 
       chunkStream.on("close", {
-        Lexer.log.trace("Lexeme Stream closed")
+        Lexer.log.traceFunc({"Lexeme Stream closed"})
       })$
     })$
 
     dataStream.on<String>("error", (error) => {
-      Lexer.log.trace("Received error from Stream: #{error}")
+      Lexer.log.traceFunc({"Received error from Stream: #{error}"})
       stream.emit("error", error)$
     })$
 
     dataStream.on("close", {
-      Lexer.log.trace("Stream closed")
+      Lexer.log.traceFunc({"Stream closed"})
       stream.emit("close")$
     })$
 
