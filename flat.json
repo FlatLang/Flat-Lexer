@@ -17,8 +17,14 @@
         "github:FlatLang/Logger": "master",
         "github:FlatLang/Compiler-String-Extensions": "master",
         "github:FlatLang/Stream": "master",
-        "github:FlatLang/Flat-Compiler-Models": "master"
+        "github:FlatLang/Flat-Compiler-Models": "master",
+        "github:FlatLang/Time": "master"
       }
+    },
+    "flatokenizer": {
+      "mainClass": "flat/lexer/Tokenizer_Command",
+      "bin": "flatokenizer",
+      "dependencies": {}
     },
     "test": {
       "mainClass": "flat/lexer/Lexer_TestSuite",

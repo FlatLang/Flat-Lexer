@@ -1,0 +1,22 @@
+package flat/lexer
+
+import flat/io/File
+import flat/compiler/models/Lexeme
+import flat/log/Logger
+import flat/time/Timer
+
+class {
+  let static Logger log = Logger(Tokenizer_Command.class)
+
+  public static async main(String[] args) {
+    let sourceFile = File(args[1])
+
+    let tokenizeTimer = Timer():start()
+    let lexemeStream = Tokenizer().tokenize(sourceFile)
+    lexemeStream.on<Lexeme>("data", lexeme => Tokenizer_Command.log.debug(lexeme))
+    lexemeStream.waitFor("close")
+    tokenizeTimer.stop()
+
+    Tokenizer_Command.log.info("Done! Took #{tokenizeTimer.duration}ms")
+  }
+}
