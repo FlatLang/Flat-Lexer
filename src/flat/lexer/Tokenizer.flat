@@ -133,9 +133,6 @@ class {
           return contents.indexOf("*/", start: index + 2) + 2
         }
       }
-    }
-
-    switch char {
       '.' => {
         if (index > 0 && contents[index - 1].isNumber) {
           var Int offset = 0
@@ -149,6 +146,11 @@ class {
           } else {
             return index + offset + 1
           }
+        }
+      }
+      '-' => '=' => {
+        if (contents[index + 1] == '>') {
+          return index == contents.count - 2 ? -1 : index + 2
         }
       }
     }

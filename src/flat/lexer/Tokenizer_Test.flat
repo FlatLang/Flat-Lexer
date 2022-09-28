@@ -361,4 +361,38 @@ testable class {
 
     expectLexemes(value, expected)
   }
+
+  async test `can tokenize basic field access from a function call`() {
+    let value = Tokenizer().tokenize("Lexer().lex").consumeAll<Lexeme>("data")
+
+    let Lexeme[] expected = [
+      Lexeme(value: "Lexer"),
+      Lexeme(value: "("),
+      Lexeme(value: ")"),
+      Lexeme(value: "."),
+      Lexeme(value: "lex")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize slim arrow symbol`() {
+    let value = Tokenizer().tokenize("->").consumeAll<Lexeme>("data")
+
+    let Lexeme[] expected = [
+      Lexeme(value: "->")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize fat arrow symbol`() {
+    let value = Tokenizer().tokenize("=>").consumeAll<Lexeme>("data")
+
+    let Lexeme[] expected = [
+      Lexeme(value: "=>")
+    ]
+
+    expectLexemes(value, expected)
+  }
 }
