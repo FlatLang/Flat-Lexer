@@ -10,7 +10,7 @@ import flat/extensions/SyntaxStringFunctions
 
 class {
   let static Logger log = Logger(Tokenizer.class)
-  let static Char[] DELIMITERS = ".;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
+  let static Char[] DELIMITERS = ".,;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
 
   public tokenize(File file) => tokenize(file.createReadStream())
 
