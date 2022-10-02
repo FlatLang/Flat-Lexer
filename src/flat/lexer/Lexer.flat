@@ -19,9 +19,11 @@ class {
   public async lexemesToTokens(Stream lexemeStream) -> Stream {
     let stream = Stream(true)
 
+    let engine = LexerEngine()
+
     lexemeStream.on<Lexeme>("data", (lexeme) => {
       Lexer.log.traceFunc({"Received data from Lexeme Stream: #{lexeme}"})
-      let token = createToken(lexeme)
+      let token = engine.createToken(lexeme)
       Lexer.log.traceFunc({"Created Token from Lexeme: #{token}"})
 
       stream.emit("data", token)$
@@ -38,33 +40,5 @@ class {
     })
 
     return stream
-  }
-
-  createToken(Lexeme lexeme) -> Token {
-    return Token(
-      value: lexeme.value,
-      location: lexeme.location,
-      type: getTypeForLexeme(lexeme)
-    )
-  }
-
-  getTypeForLexeme(Lexeme lexeme) -> Int {
-    if (lexeme.value.startsWith("//")) {
-      return Token.Type.COMMENT
-    } else if (lexeme.value.startsWith("/*")) {
-      return Token.Type.COMMENT
-    } else if (lexeme.value.isWhitespace()) {
-      return Token.Type.WS
-    } else if (lexeme.value.isSurroundedByQuotes()) {
-      return Token.Type.STRING
-    } else if (lexeme.value.isUnsignedInteger()) {
-      return Token.Type.INTEGER
-    } else if (lexeme.value.isUnsignedFloat()) {
-      return Token.Type.FLOAT
-    } else if (lexeme.value.isSymbol()) {
-      return Token.Type.SYMBOL
-    } else {
-      return Token.Type.IDENTIFIER
-    }
   }
 }
