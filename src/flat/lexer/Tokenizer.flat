@@ -53,7 +53,7 @@ class {
     let stream = Stream(true)
 
     var Int prevIndex = -1
-    var Int index = contents.findCharOnTopLevel(DELIMITERS)
+    var Int index = findDelimiterOnTopLevel(contents)
 
     var Int lineNumber = 1
     var Int column = 1
@@ -104,7 +104,7 @@ class {
       }
 
       prevIndex = endIndex - 1
-      index = contents.findCharOnTopLevel(DELIMITERS, start: endIndex)
+      index = findDelimiterOnTopLevel(contents, start: endIndex)
     }
 
     if (prevIndex != -2 && prevIndex < contents.count - 1) {
@@ -116,6 +116,51 @@ class {
     stream.emit("close")$
 
     return stream
+  }
+
+  findDelimiterOnTopLevel(String contents, Int start = 0) -> Int => -1 {
+    var Int index = start
+
+    while (index < contents.count && index >= 0) {
+      let c = contents[index]
+
+      switch c {
+        '.' => return index
+        ',' => return index
+        ';' => return index
+        '{' => return index
+        '}' => return index
+        '[' => return index
+        ']' => return index
+        '(' => return index
+        ')' => return index
+        '/' => return index
+        '*' => return index
+        '%' => return index
+        '<' => return index
+        '>' => return index
+        '=' => return index
+        ' ' => return index
+        '\t' => return index
+        '\n' => return index
+        '\r' => return index
+        ':' => return index
+        '!' => return index
+        '+' => return index
+        '-' => return index
+        '\\' => return index
+      }
+
+      switch c {
+        '"' => index = contents.findEndingQuote(index) + 1
+        '\'' => index = contents.findEndingSingleQuote(index) + 1
+        '(' => index = contents.findEndingMatch(index, '(', ')') + 1
+        '{' => index = contents.findEndingMatch(index, '{', '}') + 1
+        '[' => index = contents.findEndingMatch(index, '[', ']') + 1
+        '<' => index = contents.findEndingMatch(index, '<', '>') + 1
+        default => index++
+      }
+    }
   }
 
   checkPrevLexemeContinuation(String contents, Char char, Int index) -> Int => -2 {
