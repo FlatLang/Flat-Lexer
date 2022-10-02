@@ -53,7 +53,7 @@ class {
       return Token.Type.COMMENT
     } else if (lexeme.value.startsWith("/*")) {
       return Token.Type.COMMENT
-    } else if (lexeme.value.trim().count == 0) {
+    } else if (lexeme.value.isWhitespace()) {
       return Token.Type.WS
     } else if (lexeme.value.isSurroundedByQuotes()) {
       return Token.Type.STRING
