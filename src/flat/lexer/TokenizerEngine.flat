@@ -23,7 +23,7 @@ class {
     while (index != -1) {
       let char = contents[index]
 
-      if ((let prevSkipTo = checkPrevLexemeContinuation(contents, char, index)) != -2) {
+      if ((let prevSkipTo = checkPrevLexemeContinuation(contents, char, prevIndex, index)) != -2) {
         index = prevSkipTo
         continue
       }
@@ -37,7 +37,7 @@ class {
 
       var Int endIndex = index + 1
 
-      if ((let currentSkipTo = checkCurrentLexemeContinuation(contents, char, index)) != -2) {
+      if ((let currentSkipTo = checkCurrentLexemeContinuation(contents, char, prevIndex, index)) != -2) {
         endIndex = currentSkipTo
       }
 
@@ -125,7 +125,7 @@ class {
     }
   }
 
-  checkPrevLexemeContinuation(String contents, Char char, Int index) -> Int => -2 {
+  checkPrevLexemeContinuation(String contents, Char char, Int prevIndex, Int index) -> Int => -2 {
     if (index == contents.count - 1) {
       return -2
     }
@@ -169,17 +169,9 @@ class {
         }
       }
     }
-
-    switch char {
-      '+' => {
-        if (contents[index + 1] == '+') {
-          return index == contents.count - 2 ? -1 : index + 2
-        }
-      }
-    }
   }
 
-  checkCurrentLexemeContinuation(String contents, Char char, Int index) -> Int => -2 {
+  checkCurrentLexemeContinuation(String contents, Char char, Int prevIndex, Int index) -> Int => -2 {
     if (index == contents.count - 1) {
       return -2
     }
@@ -187,6 +179,14 @@ class {
     switch char {
       '+' => '-' => '*' => '/' => '&' => '|' => '%' => '^' => '<' => '>' => '!' => '=' => {
         if (contents[index + 1] == '=') {
+          return index == contents.count - 2 ? -1 : index + 2
+        }
+      }
+    }
+
+    switch char {
+      '+' => {
+        if (contents[index + 1] == '+') {
           return index == contents.count - 2 ? -1 : index + 2
         }
       }
