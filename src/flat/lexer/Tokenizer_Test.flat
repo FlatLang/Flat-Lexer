@@ -169,6 +169,16 @@ testable class {
     expectLexemes(value, expected)
   }
 
+  async test `can tokenize plus-plus symbol`() {
+    let value = Tokenizer().tokenize("++").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "++")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
   async test `handles no whitespace between lexemes`() {
     let value = Tokenizer().tokenize("this+that").consumeAll<Lexeme>("data")
 
