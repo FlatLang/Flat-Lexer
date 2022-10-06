@@ -2,6 +2,7 @@ package flat/lexer
 
 import flat/lexer/Lexer
 import flat/compiler/models/Lexeme
+import flat/compiler/models/Location
 
 import static flat/lexer/TestUtils_Test.TestUtils
 
@@ -14,23 +15,23 @@ testable class {
     let expected = [
       Lexeme(
         value: "package",
-        location: Lexeme.Location(lineNumber: 1, column: 1)
+        location: Location(lineNumber: 1, column: 1)
       ),
       Lexeme(
         value: " ",
-        location: Lexeme.Location(lineNumber: 1, column: 8)
+        location: Location(lineNumber: 1, column: 8)
       ),
       Lexeme(
         value: "flat",
-        location: Lexeme.Location(lineNumber: 1, column: 9)
+        location: Location(lineNumber: 1, column: 9)
       ),
       Lexeme(
         value: "/",
-        location: Lexeme.Location(lineNumber: 1, column: 13)
+        location: Location(lineNumber: 1, column: 13)
       ),
       Lexeme(
         value: "lexer",
-        location: Lexeme.Location(lineNumber: 1, column: 14)
+        location: Location(lineNumber: 1, column: 14)
       )
     ]
 
@@ -236,55 +237,55 @@ testable class {
     let Lexeme[] expected = [
       Lexeme(
         value: "package",
-        location: Lexeme.Location(lineNumber: 1, column: 1)
+        location: Location(lineNumber: 1, column: 1)
       ),
       Lexeme(
         value: " ",
-        location: Lexeme.Location(lineNumber: 1, column: 8)
+        location: Location(lineNumber: 1, column: 8)
       ),
       Lexeme(
         value: "flat",
-        location: Lexeme.Location(lineNumber: 1, column: 9)
+        location: Location(lineNumber: 1, column: 9)
       ),
       Lexeme(
         value: "/",
-        location: Lexeme.Location(lineNumber: 1, column: 13)
+        location: Location(lineNumber: 1, column: 13)
       ),
       Lexeme(
         value: "lexer",
-        location: Lexeme.Location(lineNumber: 1, column: 14)
+        location: Location(lineNumber: 1, column: 14)
       ),
       Lexeme(
         value: "\n\n",
-        location: Lexeme.Location(lineNumber: 1, column: 19)
+        location: Location(lineNumber: 1, column: 19)
       ),
       Lexeme(
         value: "import",
-        location: Lexeme.Location(lineNumber: 3, column: 1)
+        location: Location(lineNumber: 3, column: 1)
       ),
       Lexeme(
         value: " ",
-        location: Lexeme.Location(lineNumber: 3, column: 7)
+        location: Location(lineNumber: 3, column: 7)
       ),
       Lexeme(
         value: "flat",
-        location: Lexeme.Location(lineNumber: 3, column: 8)
+        location: Location(lineNumber: 3, column: 8)
       ),
       Lexeme(
         value: "/",
-        location: Lexeme.Location(lineNumber: 3, column: 12)
+        location: Location(lineNumber: 3, column: 12)
       ),
       Lexeme(
         value: "lexer",
-        location: Lexeme.Location(lineNumber: 3, column: 13)
+        location: Location(lineNumber: 3, column: 13)
       ),
       Lexeme(
         value: "/",
-        location: Lexeme.Location(lineNumber: 3, column: 18)
+        location: Location(lineNumber: 3, column: 18)
       ),
       Lexeme(
         value: "Lexer",
-        location: Lexeme.Location(lineNumber: 3, column: 19)
+        location: Location(lineNumber: 3, column: 19)
       )
     ]
 
