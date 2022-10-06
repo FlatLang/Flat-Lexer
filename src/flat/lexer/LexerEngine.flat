@@ -22,6 +22,8 @@ class {
   getTypeForLexeme(Lexeme lexeme) -> Int {
     if (lexeme.value == "null") {
       return Token.Type.NULL
+    } else if (lexeme.value == "true" || lexeme.value == "false") {
+      return Token.Type.BOOL
     } else if (lexeme.value.startsWith("//")) {
       return Token.Type.COMMENT
     } else if (lexeme.value.startsWith("/*")) {
