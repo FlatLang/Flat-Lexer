@@ -32,6 +32,8 @@ class {
       return Token.Type.WS
     } else if (lexeme.value.isSurroundedByQuotes()) {
       return Token.Type.STRING
+    } else if (lexeme.value.isCharLiteral()) {
+      return Token.Type.CHAR
     } else if (lexeme.value.isUnsignedInteger()) {
       return Token.Type.INTEGER
     } else if (lexeme.value.isUnsignedFloat()) {
