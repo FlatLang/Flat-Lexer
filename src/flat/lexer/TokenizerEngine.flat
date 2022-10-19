@@ -108,6 +108,7 @@ class {
         '\n' =>
         '\r' =>
         ':' =>
+        '?' =>
         '!' =>
         '+' =>
         '-' =>
@@ -137,9 +138,6 @@ class {
           return index == contents.count - 3 ? -1 : index + 3
         }
       }
-    }
-
-    switch char {
       '/' => {
         if (contents[index + 1] == '/') {
           // Handle single-line comment
