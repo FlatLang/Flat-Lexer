@@ -12,9 +12,9 @@ class {
   static Logger log = Logger(Tokenizer.class)
   static Char[] DELIMITERS = ".,;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
 
-  public async tokenize(File file) => tokenize(file.createReadStream())
+  public tokenize(File file) => tokenize(file.createReadStream())
 
-  public async tokenize(Stream dataStream) -> Stream {
+  public tokenize(Stream dataStream) -> Stream {
     let stream = Stream(true)
 
     let engine = TokenizerEngine()
@@ -36,17 +36,17 @@ class {
       chunkStream.on("close", {
         Lexer.log.traceFunc({"Lexeme Stream closed"})
       })
-    })
+    })$
 
     dataStream.on<String>("error", (error) => {
       Lexer.log.traceFunc({"Received error from Stream: #{error}"})
       stream.emit("error", error)$
-    })
+    })$
 
     dataStream.on("close", {
       Lexer.log.traceFunc({"Stream closed"})
       stream.emit("close")$
-    })
+    })$
 
     return stream
   }

@@ -12,11 +12,11 @@ class {
   static Logger log = Logger(Lexer.class)
   static Char[] DELIMITERS = ".;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
 
-  public async lex(File file) => lexemesToTokens(Tokenizer().tokenize(file))
-  public async lex(Stream dataStream) => lexemesToTokens(Tokenizer().tokenize(dataStream))
-  public async lex(String contents) => lexemesToTokens(Tokenizer().tokenize(contents))
+  public lex(File file) => lexemesToTokens(Tokenizer().tokenize(file))
+  public lex(Stream dataStream) => lexemesToTokens(Tokenizer().tokenize(dataStream))
+  public lex(String contents) => lexemesToTokens(Tokenizer().tokenize(contents))
 
-  public async lexemesToTokens(Stream lexemeStream) -> Stream {
+  public lexemesToTokens(Stream lexemeStream) -> Stream {
     let stream = Stream(true)
 
     let engine = LexerEngine()
@@ -27,17 +27,17 @@ class {
       Lexer.log.traceFunc({"Created Token from Lexeme: #{token}"})
 
       stream.emit("data", token)$
-    })
+    })$
 
     lexemeStream.on<String>("error", (error) => {
       Lexer.log.traceFunc({"Received error from Lexeme Stream: #{error}"})
       stream.emit("error", error)$
-    })
+    })$
 
     lexemeStream.on("close", {
       Lexer.log.traceFunc({"Stream closed"})
       stream.emit("close")$
-    })
+    })$
 
     return stream
   }
