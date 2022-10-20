@@ -202,6 +202,11 @@ class {
           return index == contents.count - 2 ? -1 : index + 2
         }
       }
+      '.' => {
+        if (contents[index + 1] == '.') {
+          return index == contents.count - 2 ? -1 : index + 2
+        }
+      }
     }
 
     switch char {
