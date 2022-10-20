@@ -213,6 +213,28 @@ testable class {
     expectLexemes(value, expected)
   }
 
+  async test `can tokenize identifier and tick symbol`() {
+    let value = Tokenizer().tokenize("test`").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "test"),
+      Lexeme(value: "`")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize tick and identifier`() {
+    let value = Tokenizer().tokenize("`test").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "`"),
+      Lexeme(value: "test")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
   async test `can tokenize integer and .. symbol`() {
     let value = Tokenizer().tokenize("0..").consumeAll<Lexeme>("data")
 
