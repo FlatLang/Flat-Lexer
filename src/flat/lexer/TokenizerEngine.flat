@@ -199,8 +199,10 @@ class {
         }
       }
       '?' => {
-        if (contents[index + 1] == ':') {
-          return index == contents.count - 2 ? -1 : index + 2
+        match (contents[index + 1]) {
+          ':' => '.' => {
+            return index == contents.count - 2 ? -1 : index + 2
+          }
         }
       }
       '.' => {
