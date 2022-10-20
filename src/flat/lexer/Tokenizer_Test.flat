@@ -213,6 +213,17 @@ testable class {
     expectLexemes(value, expected)
   }
 
+  async test `can tokenize integer and .. symbol`() {
+    let value = Tokenizer().tokenize("0..").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "0"),
+      Lexeme(value: "..")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
   async test `can tokenize double-sided arrow symbol`() {
     let value = Tokenizer().tokenize("<=>").consumeAll<Lexeme>("data")
 
