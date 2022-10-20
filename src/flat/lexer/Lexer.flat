@@ -9,8 +9,8 @@ import flat/stream/Stream
 import flat/extensions/SyntaxStringFunctions
 
 class {
-  let static Logger log = Logger(Lexer.class)
-  let static Char[] DELIMITERS = ".;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
+  static Logger log = Logger(Lexer.class)
+  static Char[] DELIMITERS = ".;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
 
   public async lex(File file) => lexemesToTokens(Tokenizer().tokenize(file))
   public async lex(Stream dataStream) => lexemesToTokens(Tokenizer().tokenize(dataStream))

@@ -9,8 +9,8 @@ import flat/stream/Stream
 import flat/extensions/SyntaxStringFunctions
 
 class {
-  let static Logger log = Logger(Tokenizer.class)
-  let static Char[] DELIMITERS = ".,;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
+  static Logger log = Logger(Tokenizer.class)
+  static Char[] DELIMITERS = ".,;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
 
   public async tokenize(File file) => tokenize(file.createReadStream())
 
