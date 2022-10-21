@@ -4,7 +4,7 @@ import flat/compiler/models/Lexeme
 import flat/compiler/models/Token
 import flat/io/File
 import flat/log/Logger
-import flat/stream/Stream
+import flat/eventstream/EventStream
 
 import flat/extensions/SyntaxStringFunctions
 
@@ -13,15 +13,15 @@ class {
   static Char[] DELIMITERS = ".;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
 
   public lex(File file) => lexemesToTokens(Tokenizer().tokenize(file):emit("start"))
-  public lex(Stream dataStream) => lexemesToTokens(Tokenizer().tokenize(dataStream):emit("start"))
+  public lex(EventStream dataStream) => lexemesToTokens(Tokenizer().tokenize(dataStream):emit("start"))
   public lex(String contents) => lexemesToTokens(Tokenizer().tokenize(contents):emit("start"))
 
-  public lexemesToTokens(Stream lexemeStream) =>
-    Stream(true).on("start", (data, stream) => {
+  public lexemesToTokens(EventStream lexemeStream) =>
+    EventStream(true).on("start", (data, stream) => {
       let engine = LexerEngine()
 
       lexemeStream.on<Lexeme>("data", (lexeme) => {
-        Lexer.log.traceFunc({"Received data from Lexeme Stream: #{lexeme}"})
+        Lexer.log.traceFunc({"Received data from Lexeme EventStream: #{lexeme}"})
         let token = engine.createToken(lexeme)
         Lexer.log.traceFunc({"Created Token from Lexeme: #{token}"})
 
@@ -29,12 +29,12 @@ class {
       })
 
       lexemeStream.on<String>("error", (error) => {
-        Lexer.log.traceFunc({"Received error from Lexeme Stream: #{error}"})
+        Lexer.log.traceFunc({"Received error from Lexeme EventStream: #{error}"})
         stream.emit("error", error)
       })
 
       lexemeStream.on("close", {
-        Lexer.log.traceFunc({"Stream closed"})
+        Lexer.log.traceFunc({"EventStream closed"})
         stream.emit("close")
       })
     })

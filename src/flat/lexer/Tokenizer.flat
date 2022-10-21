@@ -4,7 +4,7 @@ import flat/compiler/models/Lexeme
 import flat/compiler/models/Token
 import flat/io/File
 import flat/log/Logger
-import flat/stream/Stream
+import flat/eventstream/EventStream
 
 import flat/extensions/SyntaxStringFunctions
 
@@ -14,29 +14,29 @@ class {
 
   public tokenize(File file) => tokenize(file.createReadStream())
 
-  public tokenize(Stream dataStream) =>
-    Stream(true).on("start", (data, stream) => {
+  public tokenize(EventStream dataStream) =>
+    EventStream(true).on("start", (data, stream) => {
       let engine = TokenizerEngine()
       var processingData = true
       var datastreamClosed = false
 
       dataStream.on<String>("data", (data) => {
         processingData = true
-        Tokenizer.log.traceFunc({"Received data from Stream with count: #{data.count}"})
+        Tokenizer.log.traceFunc({"Received data from EventStream with count: #{data.count}"})
         let chunkStream = engine.tokenize(data)
 
         chunkStream.on<Lexeme>("data", (lexeme) => {
-          Tokenizer.log.traceFunc({"Received lexeme from Lexeme Stream: #{lexeme}"})
+          Tokenizer.log.traceFunc({"Received lexeme from Lexeme EventStream: #{lexeme}"})
           stream.emit("data", lexeme)
         })
 
         chunkStream.on<String>("error", (error) => {
-          Tokenizer.log.traceFunc({"Received error from Lexeme Stream: #{error}"})
+          Tokenizer.log.traceFunc({"Received error from Lexeme EventStream: #{error}"})
           stream.emit("error", error)
         })
 
         chunkStream.on("close", {
-          Tokenizer.log.traceFunc({"Lexeme Stream closed. datastreamClosed: #{datastreamClosed}"})
+          Tokenizer.log.traceFunc({"Lexeme EventStream closed. datastreamClosed: #{datastreamClosed}"})
           processingData = false
           if (datastreamClosed) {
             stream.emit("close")
@@ -47,20 +47,20 @@ class {
       })
 
       dataStream.on<String>("error", (error) => {
-        Tokenizer.log.traceFunc({"Received error from Stream: #{error}"})
+        Tokenizer.log.traceFunc({"Received error from EventStream: #{error}"})
         stream.emit("error", error)
       })
 
       dataStream.on("close", {
         datastreamClosed = true
-        Tokenizer.log.traceFunc({"Stream closed. processingData: #{processingData}"})
+        Tokenizer.log.traceFunc({"EventStream closed. processingData: #{processingData}"})
         if (!processingData) {
           stream.emit("close")
         }
       })
     })
 
-  public tokenize(String contents) -> Stream {
+  public tokenize(String contents) -> EventStream {
     let engine = TokenizerEngine()
 
     return engine.tokenize(contents)
