@@ -9,7 +9,7 @@ testable class {
   async test `can lex a single-line comment`() {
     let value = Lexer().lex("|
       // this is a test
-      |").consumeAll<Token>("data")
+      |"):emit("start").consumeAll<Token>("data")
 
     let Token[] expected = [
       Token(value: "// this is a test", type: Token.Type.COMMENT)
@@ -24,7 +24,7 @@ testable class {
 
          hey
       */
-      |").consumeAll<Token>("data")
+      |"):emit("start").consumeAll<Token>("data")
 
     let Token[] expected = [
       Token(
@@ -44,7 +44,7 @@ testable class {
   async test `can lex basic package statement with type info`() {
     let value = Lexer().lex("|
       package flat \"test\"
-      |").consumeAll<Token>("data")
+      |"):emit("start").consumeAll<Token>("data")
 
     let expected = [
       Token(

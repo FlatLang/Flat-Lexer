@@ -14,44 +14,51 @@ class {
 
   public tokenize(File file) => tokenize(file.createReadStream())
 
-  public tokenize(Stream dataStream) -> Stream {
-    let stream = Stream(true)
+  public tokenize(Stream dataStream) =>
+    Stream(true).on("start", (data, stream) => {
+      let engine = TokenizerEngine()
+      var processingData = true
+      var datastreamClosed = false
 
-    let engine = TokenizerEngine()
+      dataStream.on<String>("data", (data) => {
+        processingData = true
+        Tokenizer.log.traceFunc({"Received data from Stream with count: #{data.count}"})
+        let chunkStream = engine.tokenize(data)
 
-    let dataEvent = dataStream.on<String>("data", (data) => {
-      Lexer.log.traceFunc({"Received data from Stream with count: #{data.count}"})
-      let chunkStream = engine.tokenize(data)
+        chunkStream.on<Lexeme>("data", (lexeme) => {
+          Tokenizer.log.traceFunc({"Received lexeme from Lexeme Stream: #{lexeme}"})
+          stream.emit("data", lexeme)
+        })
 
-      chunkStream.on<Lexeme>("data", (lexeme) => {
-        Lexer.log.traceFunc({"Received lexeme from Lexeme Stream: #{lexeme}"})
-        stream.emit("data", lexeme)$
+        chunkStream.on<String>("error", (error) => {
+          Tokenizer.log.traceFunc({"Received error from Lexeme Stream: #{error}"})
+          stream.emit("error", error)
+        })
+
+        chunkStream.on("close", {
+          Tokenizer.log.traceFunc({"Lexeme Stream closed. datastreamClosed: #{datastreamClosed}"})
+          processingData = false
+          if (datastreamClosed) {
+            stream.emit("close")
+          }
+        })
+
+        chunkStream.emit("start")
       })
 
-      chunkStream.on<String>("error", (error) => {
-        Lexer.log.traceFunc({"Received error from Lexeme Stream: #{error}"})
-        stream.emit("error", error)$
+      dataStream.on<String>("error", (error) => {
+        Tokenizer.log.traceFunc({"Received error from Stream: #{error}"})
+        stream.emit("error", error)
       })
 
-      chunkStream.on("close", {
-        Lexer.log.traceFunc({"Lexeme Stream closed"})
+      dataStream.on("close", {
+        datastreamClosed = true
+        Tokenizer.log.traceFunc({"Stream closed. processingData: #{processingData}"})
+        if (!processingData) {
+          stream.emit("close")
+        }
       })
-    })$
-
-    let errorEvent = dataStream.on<String>("error", (error) => {
-      Lexer.log.traceFunc({"Received error from Stream: #{error}"})
-      stream.emit("error", error)$
-    })$
-
-    dataStream.on("close", {
-      await dataEvent
-      await errorEvent
-      Lexer.log.traceFunc({"Stream closed"})
-      stream.emit("close")$
-    })$
-
-    return stream
-  }
+    })
 
   public tokenize(String contents) -> Stream {
     let engine = TokenizerEngine()

@@ -12,9 +12,10 @@ import flat/extensions/SyntaxStringFunctions
 class {
   static Logger log = Logger(TokenizerEngine.class)
 
-  public tokenize(String contents) -> Stream {
-    let stream = Stream(true)
+  public tokenize(String contents) =>
+    Stream(true).on("start", (data, stream) => { tokenize(contents, stream) })
 
+  tokenize(String contents, Stream stream) {
     var Int prevIndex = -1
     var Int index = findDelimiterOnTopLevel(contents)
 
@@ -30,7 +31,7 @@ class {
       }
 
       if (let prevLexeme = createLexeme(contents, prevIndex, index, lineNumber, column)) {
-        stream.emit("data", prevLexeme)$
+        stream.emit("data", prevLexeme)
 
         column += prevLexeme.value.count
         lineNumber += prevLexeme.value.howMany('\n')
@@ -43,7 +44,7 @@ class {
       }
 
       if (let currentLexeme = createLexeme(contents, index - 1, endIndex, lineNumber, column)) {
-        stream.emit("data", currentLexeme)$
+        stream.emit("data", currentLexeme)
 
         if ((let lines = currentLexeme.value.howMany('\n')) > 0) {
           lineNumber += lines
@@ -72,13 +73,13 @@ class {
 
     if (prevIndex != -2 && prevIndex < contents.count - 1) {
       if (let remainder = createLexeme(contents, prevIndex, index, lineNumber, column)) {
-        stream.emit("data", remainder)$
+        stream.emit("data", remainder)
       }
     }
 
-    stream.emit("close")$
+    log.debugFunc({"Finished tokenizing contents of size #{contents.count}"})
 
-    return stream
+    stream.emit("close")
   }
 
   findDelimiterOnTopLevel(String contents, Int start = 0) -> Int => -1 {

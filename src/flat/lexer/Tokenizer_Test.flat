@@ -10,7 +10,7 @@ testable class {
   async test `can tokenize basic package statement with location info`() {
     let value = Tokenizer().tokenize("|
       package flat/lexer
-      |").consumeAll<Lexeme>("data")
+      |"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(
@@ -39,7 +39,7 @@ testable class {
   }
 
   async test `can tokenize float`() {
-    let value = Tokenizer().tokenize("234.141").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("234.141"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "234.141")
@@ -49,7 +49,7 @@ testable class {
   }
 
   async test `can tokenize integer`() {
-    let value = Tokenizer().tokenize("234").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("234"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "234")
@@ -59,7 +59,7 @@ testable class {
   }
 
   async test `can tokenize String`() {
-    let value = Tokenizer().tokenize("\"this is a string\"").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("\"this is a string\""):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "\"this is a string\"")
@@ -69,7 +69,7 @@ testable class {
   }
 
   async test `can tokenize greater-than-or-equal-to symbol when its not the last lexeme`() {
-    let value = Tokenizer().tokenize(">= hey").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize(">= hey"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: ">="),
@@ -81,7 +81,7 @@ testable class {
   }
 
   async test `can tokenize greater-than-or-equal-to symbol`() {
-    let value = Tokenizer().tokenize(">=").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize(">="):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: ">=")
@@ -91,7 +91,7 @@ testable class {
   }
 
   async test `can tokenize less-than-or-equal-to symbol`() {
-    let value = Tokenizer().tokenize("<=").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("<="):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "<=")
@@ -101,7 +101,7 @@ testable class {
   }
 
   async test `can tokenize equivalence symbol`() {
-    let value = Tokenizer().tokenize("==").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("=="):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "==")
@@ -111,7 +111,7 @@ testable class {
   }
 
   async test `can tokenize non-equivalence symbol`() {
-    let value = Tokenizer().tokenize("!=").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("!="):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "!=")
@@ -121,7 +121,7 @@ testable class {
   }
 
   async test `can tokenize modulo-equals symbol`() {
-    let value = Tokenizer().tokenize("%=").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("%="):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "%=")
@@ -131,7 +131,7 @@ testable class {
   }
 
   async test `can tokenize divide-equals symbol`() {
-    let value = Tokenizer().tokenize("/=").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("/="):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "/=")
@@ -141,7 +141,7 @@ testable class {
   }
 
   async test `can tokenize multiply-equals symbol`() {
-    let value = Tokenizer().tokenize("*=").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("*="):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "*=")
@@ -151,7 +151,7 @@ testable class {
   }
 
   async test `can tokenize plus-equals symbol`() {
-    let value = Tokenizer().tokenize("+=").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("+="):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "+=")
@@ -161,7 +161,7 @@ testable class {
   }
 
   async test `can tokenize minus-equals symbol`() {
-    let value = Tokenizer().tokenize("-=").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("-="):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "-=")
@@ -171,7 +171,7 @@ testable class {
   }
 
   async test `can tokenize plus-plus symbol`() {
-    let value = Tokenizer().tokenize("++").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("++"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "++")
@@ -181,7 +181,7 @@ testable class {
   }
 
   async test `can tokenize identifier and plus-plus symbol`() {
-    let value = Tokenizer().tokenize("test++").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("test++"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "test"),
@@ -192,7 +192,7 @@ testable class {
   }
 
   async test `can tokenize identifier and elvis symbol`() {
-    let value = Tokenizer().tokenize("test?:").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("test?:"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "test"),
@@ -203,7 +203,7 @@ testable class {
   }
 
   async test `can tokenize identifier and .. symbol`() {
-    let value = Tokenizer().tokenize("test..").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("test.."):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "test"),
@@ -214,7 +214,7 @@ testable class {
   }
 
   async test `can tokenize identifier and tick symbol`() {
-    let value = Tokenizer().tokenize("test`").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("test`"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "test"),
@@ -225,7 +225,7 @@ testable class {
   }
 
   async test `can tokenize tick and identifier`() {
-    let value = Tokenizer().tokenize("`test").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("`test"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "`"),
@@ -236,7 +236,7 @@ testable class {
   }
 
   async test `can tokenize identifier and safe access symbol`() {
-    let value = Tokenizer().tokenize("test?.").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("test?."):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "test"),
@@ -247,7 +247,7 @@ testable class {
   }
 
   async test `can tokenize safe access and identifier`() {
-    let value = Tokenizer().tokenize("?.test").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("?.test"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "?."),
@@ -258,7 +258,7 @@ testable class {
   }
 
   async test `can tokenize integer and .. symbol`() {
-    let value = Tokenizer().tokenize("0..").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("0.."):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "0"),
@@ -269,7 +269,7 @@ testable class {
   }
 
   async test `can tokenize double-sided arrow symbol`() {
-    let value = Tokenizer().tokenize("<=>").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("<=>"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "<=>")
@@ -279,7 +279,7 @@ testable class {
   }
 
   async test `handles no whitespace between lexemes`() {
-    let value = Tokenizer().tokenize("this+that").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("this+that"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "this"),
@@ -291,7 +291,7 @@ testable class {
   }
 
   async test `handles first lexeme as a symbol`() {
-    let value = Tokenizer().tokenize("+that").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("+that"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "+"),
@@ -302,7 +302,7 @@ testable class {
   }
 
   async test `handles preceding newlines`() {
-    let value = Tokenizer().tokenize("\n\nthis+that").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("\n\nthis+that"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "\n\n"),
@@ -319,7 +319,7 @@ testable class {
       package flat/lexer
 
       import flat/lexer/Lexer
-      |").consumeAll<Lexeme>("data")
+      |"):emit("start").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(
@@ -382,7 +382,7 @@ testable class {
   async test `can tokenize function call`() {
     let value = Tokenizer().tokenize("|
       parse(ParseRequest(sourceCode: test), value)
-      |").consumeAll<Lexeme>("data")
+      |"):emit("start").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(value: "parse"),
@@ -406,7 +406,7 @@ testable class {
   async test `can tokenize single single-line comment`() {
     let value = Tokenizer().tokenize("|
       // this is a test
-      |").consumeAll<Lexeme>("data")
+      |"):emit("start").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(value: "// this is a test")
@@ -419,7 +419,7 @@ testable class {
     let value = Tokenizer().tokenize("|
       // this is a test
       // this is another test
-      |").consumeAll<Lexeme>("data")
+      |"):emit("start").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(value: "// this is a test"),
@@ -433,7 +433,7 @@ testable class {
   async test `can tokenize single multi-line comment`() {
     let value = Tokenizer().tokenize("|
       /* this is a test */
-      |").consumeAll<Lexeme>("data")
+      |"):emit("start").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(value: "/* this is a test */")
@@ -451,7 +451,7 @@ testable class {
 
         aoeu
       /**/
-      |").consumeAll<Lexeme>("data")
+      |"):emit("start").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(value: "|
@@ -472,7 +472,7 @@ testable class {
   }
 
   async test `can tokenize basic field access from a function call`() {
-    let value = Tokenizer().tokenize("Lexer().lex").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("Lexer().lex"):emit("start").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(value: "Lexer"),
@@ -486,7 +486,7 @@ testable class {
   }
 
   async test `can tokenize slim arrow symbol`() {
-    let value = Tokenizer().tokenize("->").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("->"):emit("start").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(value: "->")
@@ -496,7 +496,7 @@ testable class {
   }
 
   async test `can tokenize fat arrow symbol`() {
-    let value = Tokenizer().tokenize("=>").consumeAll<Lexeme>("data")
+    let value = Tokenizer().tokenize("=>"):emit("start").consumeAll<Lexeme>("data")
 
     let Lexeme[] expected = [
       Lexeme(value: "=>")
