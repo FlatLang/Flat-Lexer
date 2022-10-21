@@ -19,7 +19,7 @@ class {
 
     let engine = TokenizerEngine()
 
-    dataStream.on<String>("data", (data) => {
+    let dataEvent = dataStream.on<String>("data", (data) => {
       Lexer.log.traceFunc({"Received data from Stream with count: #{data.count}"})
       let chunkStream = engine.tokenize(data)
 
@@ -38,12 +38,14 @@ class {
       })
     })$
 
-    dataStream.on<String>("error", (error) => {
+    let errorEvent = dataStream.on<String>("error", (error) => {
       Lexer.log.traceFunc({"Received error from Stream: #{error}"})
       stream.emit("error", error)$
     })$
 
     dataStream.on("close", {
+      await dataEvent
+      await errorEvent
       Lexer.log.traceFunc({"Stream closed"})
       stream.emit("close")$
     })$
