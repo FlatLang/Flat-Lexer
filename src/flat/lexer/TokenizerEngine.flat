@@ -113,19 +113,22 @@ class {
         '!' =>
         '+' =>
         '-' =>
-        '`' =>
         '\\' => return index
       }
 
       switch c {
-        '"' => index = contents.findEndingQuote(index) + 1
-        '\'' => index = contents.findEndingSingleQuote(index) + 1
-        '(' => index = contents.findEndingMatch(index, '(', ')') + 1
-        '{' => index = contents.findEndingMatch(index, '{', '}') + 1
-        '[' => index = contents.findEndingMatch(index, '[', ']') + 1
-        '<' => index = contents.findEndingMatch(index, '<', '>') + 1
-        default => index++
+        '"' => index = contents.findEndingQuote(index)
+        '\'' => index = contents.findEndingSingleQuote(index)
+        '`' => index = contents.findEndingChar('`', index)
+        '(' => index = contents.findEndingMatch(index, '(', ')')
+        '{' => index = contents.findEndingMatch(index, '{', '}')
+        '[' => index = contents.findEndingMatch(index, '[', ']')
+        '<' => index = contents.findEndingMatch(index, '<', '>')
       }
+
+      if (index == -1) break
+
+      index++
     }
   }
 

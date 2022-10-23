@@ -217,8 +217,7 @@ testable class {
     let value = Tokenizer().tokenize("test`"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(value: "test"),
-      Lexeme(value: "`")
+      Lexeme(value: "test`")
     ]
 
     expectLexemes(value, expected)
@@ -228,8 +227,29 @@ testable class {
     let value = Tokenizer().tokenize("`test"):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
-      Lexeme(value: "`"),
-      Lexeme(value: "test")
+      Lexeme(value: "`test")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize completed tick`() {
+    let value = Tokenizer().tokenize("`test`"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "`test`")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize completed tick and identifier`() {
+    let value = Tokenizer().tokenize("`test` hey"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "`test`"),
+      Lexeme(value: " "),
+      Lexeme(value: "hey"),
     ]
 
     expectLexemes(value, expected)
