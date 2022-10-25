@@ -191,6 +191,27 @@ testable class {
     expectLexemes(value, expected)
   }
 
+  async test `can tokenize minus-minus symbol`() {
+    let value = Tokenizer().tokenize("--"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "--")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize identifier and minus-minus symbol`() {
+    let value = Tokenizer().tokenize("test--"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "test"),
+      Lexeme(value: "--")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
   async test `can tokenize identifier and elvis symbol`() {
     let value = Tokenizer().tokenize("test?:"):emit("start").consumeAll<Lexeme>("data")
 
