@@ -10,7 +10,6 @@ import flat/extensions/SyntaxStringFunctions
 
 class {
   static Logger log = Logger(Tokenizer.class)
-  static Char[] DELIMITERS = ".,;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
 
   public tokenize(File file) => tokenize(file.createReadStream())
 
