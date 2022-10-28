@@ -174,14 +174,6 @@ class {
         }
       }
     }
-
-    switch char {
-      '+' => '-' => '*' => '/' => '&' => '|' => '%' => '^' => '<' => '>' => '!' => '=' => {
-        if (contents[index + 1] == '=') {
-          return index == contents.count - 2 ? -1 : index + 2
-        }
-      }
-    }
   }
 
   checkCurrentLexemeContinuation(String contents, Char char, Int prevIndex, Int index) -> Int => -2 {
