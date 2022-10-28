@@ -16,7 +16,7 @@ class {
   public tokenize(EventStream dataStream) =>
     EventStream(true).on("start", (data, stream) => {
       let engine = TokenizerEngine()
-      var processingData = true
+      var processingData = false
       var datastreamClosed = false
 
       dataStream.on<String>("data", (data) => {
