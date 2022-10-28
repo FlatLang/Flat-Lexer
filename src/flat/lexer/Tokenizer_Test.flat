@@ -320,12 +320,133 @@ testable class {
     expectLexemes(value, expected)
   }
 
-  async test `can tokenize integer and .. symbol`() {
+  async test `can tokenize identifier and dot dot dot symbol`() {
+    let value = Tokenizer().tokenize("test..."):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "test"),
+      Lexeme(value: "...")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize dot dot dot and identifier`() {
+    let value = Tokenizer().tokenize("...test"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "..."),
+      Lexeme(value: "test")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize identifier and bitwise or-equals symbol`() {
+    let value = Tokenizer().tokenize("test|="):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "test"),
+      Lexeme(value: "|=")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize bitwise or-equals and identifier`() {
+    let value = Tokenizer().tokenize("|=test"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "|="),
+      Lexeme(value: "test")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize identifier and plus-equals symbol`() {
+    let value = Tokenizer().tokenize("test+="):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "test"),
+      Lexeme(value: "+=")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize plus-equals and identifier`() {
+    let value = Tokenizer().tokenize("+=test"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "+="),
+      Lexeme(value: "test")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize identifier and amp-amp symbol`() {
+    let value = Tokenizer().tokenize("test&&"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "test"),
+      Lexeme(value: "&&")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize amp-amp and identifier`() {
+    let value = Tokenizer().tokenize("&&test"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "&&"),
+      Lexeme(value: "test")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize identifier and pipe-pipe symbol`() {
+    let value = Tokenizer().tokenize("test||"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "test"),
+      Lexeme(value: "||")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize pipe-pipe and identifier`() {
+    let value = Tokenizer().tokenize("||test"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "||"),
+      Lexeme(value: "test")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize integer and dot-dot symbol`() {
     let value = Tokenizer().tokenize("0.."):emit("start").consumeAll<Lexeme>("data")
 
     let expected = [
       Lexeme(value: "0"),
       Lexeme(value: "..")
+    ]
+
+    expectLexemes(value, expected)
+  }
+
+  async test `can tokenize identifier and colon-colon symbol`() {
+    let value = Tokenizer().tokenize("test::"):emit("start").consumeAll<Lexeme>("data")
+
+    let expected = [
+      Lexeme(value: "test"),
+      Lexeme(value: "::")
     ]
 
     expectLexemes(value, expected)

@@ -114,6 +114,8 @@ class {
         '+' =>
         '-' =>
         '@' =>
+        '&' =>
+        '|' =>
         '\\' => return index
       }
 
@@ -209,6 +211,25 @@ class {
       }
       '.' => {
         if (contents[index + 1] == '.') {
+          if (contents.count > index + 2 && contents[index + 2] == '.') {
+            return index == contents.count - 3 ? -1 : index + 3
+          } else {
+            return index == contents.count - 2 ? -1 : index + 2
+          }
+        }
+      }
+      ':' => {
+        if (contents[index + 1] == ':') {
+          return index == contents.count - 2 ? -1 : index + 2
+        }
+      }
+      '&' => {
+        if (contents[index + 1] == '&') {
+          return index == contents.count - 2 ? -1 : index + 2
+        }
+      }
+      '|' => {
+        if (contents[index + 1] == '|') {
           return index == contents.count - 2 ? -1 : index + 2
         }
       }
