@@ -13,10 +13,10 @@ class {
 
     let lexTimer = Timer():start()
     let tokenStream = Lexer().lex(sourceFile)
-    tokenStream.on<Token>("data", token => Lexer_Command.log.debug(token))
+    tokenStream.on<Token>("data", token => log.debug(token))
     tokenStream.waitFor("close")
     lexTimer.stop()
 
-    Lexer_Command.log.info("Done! Took #{lexTimer.duration}ms")
+    log.info("Done! Took #{lexTimer.duration}ms")
   }
 }
