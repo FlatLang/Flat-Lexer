@@ -21,20 +21,20 @@ class {
       let engine = LexerEngine()
 
       lexemeStream.on<Lexeme>("data", (lexeme) => {
-        log.trace({"Received data from Lexeme EventStream: #{lexeme}"})
+        log.trace("Received data from Lexeme EventStream: #{lexeme}")
         let token = engine.createToken(lexeme)
-        log.trace({"Created Token from Lexeme: #{token}"})
+        log.trace("Created Token from Lexeme: #{token}")
 
         stream.emit("data", token)
       })
 
       lexemeStream.on<String>("error", (error) => {
-        log.trace({"Received error from Lexeme EventStream: #{error}"})
+        log.trace("Received error from Lexeme EventStream: #{error}")
         stream.emit("error", error)
       })
 
       lexemeStream.on("close", {
-        log.trace({"EventStream closed"})
+        log.trace("EventStream closed")
         stream.emit("close")
       })
     })

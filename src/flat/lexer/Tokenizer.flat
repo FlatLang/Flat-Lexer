@@ -21,21 +21,21 @@ class {
 
       dataStream.on<String>("data", (data) => {
         processingData = true
-        log.trace({"Received data from EventStream with count: #{data.count}"})
+        log.trace("Received data from EventStream with count: #{data.count}")
         let chunkStream = engine.tokenize(data)
 
         chunkStream.on<Lexeme>("data", (lexeme) => {
-          log.trace({"Received lexeme from Lexeme EventStream: #{lexeme}"})
+          log.trace("Received lexeme from Lexeme EventStream: #{lexeme}")
           stream.emit("data", lexeme)
         })
 
         chunkStream.on<String>("error", (error) => {
-          log.trace({"Received error from Lexeme EventStream: #{error}"})
+          log.trace("Received error from Lexeme EventStream: #{error}")
           stream.emit("error", error)
         })
 
         chunkStream.on("close", {
-          log.trace({"Lexeme EventStream closed. datastreamClosed: #{datastreamClosed}"})
+          log.trace("Lexeme EventStream closed. datastreamClosed: #{datastreamClosed}")
           processingData = false
           if (datastreamClosed) {
             stream.emit("close")
@@ -46,13 +46,13 @@ class {
       })
 
       dataStream.on<String>("error", (error) => {
-        log.trace({"Received error from EventStream: #{error}"})
+        log.trace("Received error from EventStream: #{error}")
         stream.emit("error", error)
       })
 
       dataStream.on("close", {
         datastreamClosed = true
-        log.trace({"EventStream closed. processingData: #{processingData}"})
+        log.trace("EventStream closed. processingData: #{processingData}")
         if (!processingData) {
           stream.emit("close")
         }

@@ -77,7 +77,7 @@ class {
       }
     }
 
-    log.debug({"Finished tokenizing contents of size #{contents.count}"})
+    log.debug("Finished tokenizing contents of size #{contents.count}")
 
     stream.emit("close")
   }
