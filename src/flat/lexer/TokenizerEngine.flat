@@ -13,7 +13,7 @@ class {
   static Logger log = Logger(TokenizerEngine.class)
 
   public tokenize(String contents) =>
-    EventStream(true).on("start", (data, stream) => { tokenize(contents, stream) })
+    EventStream(true).on("start", { tokenize(contents, _stream) })
 
   tokenize(String contents, EventStream stream) {
     var Int prevIndex = -1
