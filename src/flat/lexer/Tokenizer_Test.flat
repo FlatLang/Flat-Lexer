@@ -688,4 +688,34 @@ testable class {
 
     expectLexemes(value, expected)
   }
+
+  async test `can tokenize exxternal block`() {
+    let value = Tokenizer().tokenize("|
+      external {
+        aoeuaoeu
+        aae {
+          testing
+          \#{valueHere}
+          ahhh
+        }
+      }
+      |"):emit("start").consumeAll<Lexeme>("data")
+
+    let Lexeme[] expected = [
+      Lexeme(value: "external"),
+      Lexeme(value: " "),
+      Lexeme(value: "{"),
+      Lexeme(value: "
+  aoeuaoeu
+  aae {
+    testing
+    \#{valueHere}
+    ahhh
+  }
+"),
+      Lexeme(value: "}"),
+    ]
+
+    expectLexemes(value, expected)
+  }
 }

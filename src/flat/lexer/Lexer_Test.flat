@@ -71,4 +71,34 @@ testable class {
 
     expectTokens(value, expected, checkType: true)
   }
+
+  async test `can lex an exxternal block`() {
+    let value = Lexer().lex("|
+      external {
+        aoeuaoeu
+        aae {
+          testing
+          \#{valueHere}
+          ahhh
+        }
+      }
+      |"):emit("start").consumeAll<Token>("data")
+
+    let Token[] expected = [
+      Token(value: "external", type: Token.Type.IDENTIFIER),
+      Token(value: " ", type: Token.Type.WHITESPACE),
+      Token(value: "{", type: Token.Type.SYMBOL),
+      Token(value: "
+  aoeuaoeu
+  aae {
+    testing
+    \#{valueHere}
+    ahhh
+  }
+", type: Token.Type.CODE),
+      Token(value: "}", type: Token.Type.SYMBOL),
+    ]
+
+    expectTokens(value, expected, checkType: true)
+  }
 }
