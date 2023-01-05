@@ -11,25 +11,12 @@ import flat/extensions/SyntaxStringFunctions
 class {
   static Logger log = Logger(LexerEngine.class)
 
-  static var Int externalBlock = 0
-  static String EXTERNAL_BLOCK_VALUE = "external"
-
-  checkExternalBlock(String value) {
-    if (value == EXTERNAL_BLOCK_VALUE) {
-      externalBlock = 1
-    } else if (externalBlock == 1 && value == "{") {
-      externalBlock = 2
-    } else if (externalBlock == 1) {
-      return
-    } else {
-      externalBlock = 0
-    }
-  }
+  ExternalHandler externalHandler = ExternalHandler()
 
   public createToken(Lexeme lexeme) -> Token {
     let type = getTypeForLexeme(lexeme)
 
-    checkExternalBlock(lexeme.value)
+    externalHandler.checkExternalBlock(lexeme.value)
 
     return Token(
       value: lexeme.value,
@@ -39,8 +26,8 @@ class {
   }
 
   getTypeForLexeme(Lexeme lexeme) -> Int {
-    if (externalBlock == 2) {
-      externalBlock = 0
+    if (externalHandler.isExternalCode()) {
+      externalHandler.reset()
       return Token.Type.CODE
     } if (lexeme.value == "null") {
       return Token.Type.NULL

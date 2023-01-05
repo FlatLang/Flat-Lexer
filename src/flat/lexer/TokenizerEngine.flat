@@ -12,8 +12,7 @@ import flat/extensions/SyntaxStringFunctions
 class {
   static Logger log = Logger(TokenizerEngine.class)
 
-  static var Int externalBlock = 0
-  static String EXTERNAL_BLOCK_VALUE = "external"
+  ExternalHandler externalHandler = ExternalHandler()
 
   public tokenize(String contents) =>
     EventStream(true).on("start", { tokenize(contents, _stream) })
@@ -86,8 +85,8 @@ class {
   }
 
   findDelimiterOnTopLevel(String contents, Int start = 0) -> Int => -1 {
-    if (externalBlock == 2) {
-      externalBlock = 0
+    if (externalHandler.isExternalCode()) {
+      externalHandler.reset()
       return contents.findEndingMatch(start - 1, '{', '}')
     }
 
@@ -260,18 +259,6 @@ class {
     }
   }
 
-  checkExternalBlock(String value) {
-    if (value == EXTERNAL_BLOCK_VALUE) {
-      externalBlock = 1
-    } else if (externalBlock == 1 && value == "{") {
-      externalBlock = 2
-    } else if (externalBlock == 1) {
-      return
-    } else {
-      externalBlock = 0
-    }
-  }
-
   createLexeme(
     String contents,
     Int prevIndex,
@@ -282,7 +269,7 @@ class {
     let value = contents.substring(prevIndex + 1, index == -1 ? contents.count : index)
 
     if (value.count > 0) {
-      checkExternalBlock(value)
+      externalHandler.checkExternalBlock(value)
 
       return Lexeme(
         value: value,
