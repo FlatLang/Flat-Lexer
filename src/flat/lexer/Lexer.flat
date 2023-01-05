@@ -10,7 +10,6 @@ import flat/extensions/SyntaxStringFunctions
 
 class {
   static Logger log = Logger(Lexer.class)
-  static Char[] DELIMITERS = ".;{}[]()/*%<>= \t\n\r:!+-\\".chars.toCharArray()
 
   public lex(File file) => lexemesToTokens(Tokenizer().tokenize(file):emit("start"))
   public lex(EventStream dataStream) => lexemesToTokens(Tokenizer().tokenize(dataStream):emit("start"))
