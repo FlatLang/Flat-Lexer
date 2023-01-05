@@ -14,7 +14,7 @@ class {
   public tokenize(File file) => tokenize(file.createReadStream())
 
   public tokenize(EventStream dataStream) =>
-    EventStream(true).on("start", (data, stream) => {
+    EventStream(true).on("start", (_, stream) => {
       let engine = TokenizerEngine()
       var processingData = false
       var datastreamClosed = false
