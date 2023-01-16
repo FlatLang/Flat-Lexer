@@ -7,9 +7,12 @@ import static flat/lexer/TestUtils_Test.TestUtils
 
 testable class {
   async test `can lex a single-line comment`() {
-    let value = Lexer().lex("|
+    let stream = Lexer().lex("|
       // this is a test
-      |"):emit("start").consumeAll<Token>("data")
+      |")
+
+    stream.emit("start")
+    let value = stream.consumeAll<Token>("data")
 
     let Token[] expected = [
       Token(value: "// this is a test", type: Token.Type.COMMENT)
@@ -19,12 +22,15 @@ testable class {
   }
 
   async test `can lex a multi-line comment`() {
-    let value = Lexer().lex("|
+    let stream = Lexer().lex("|
       /* this is a test
 
          hey
       */
-      |"):emit("start").consumeAll<Token>("data")
+      |")
+
+    stream.emit("start")
+    let value = stream.consumeAll<Token>("data")
 
     let Token[] expected = [
       Token(
@@ -42,9 +48,12 @@ testable class {
   }
 
   async test `can lex basic package statement with type info`() {
-    let value = Lexer().lex("|
+    let stream = Lexer().lex("|
       package flat \"test\"
-      |"):emit("start").consumeAll<Token>("data")
+      |")
+
+    stream.emit("start")
+    let value = stream.consumeAll<Token>("data")
 
     let expected = [
       Token(
@@ -73,7 +82,7 @@ testable class {
   }
 
   async test `can lex an exxternal block`() {
-    let value = Lexer().lex("|
+    let stream = Lexer().lex("|
       external {
         aoeuaoeu
         aae {
@@ -82,7 +91,10 @@ testable class {
           ahhh
         }
       }
-      |"):emit("start").consumeAll<Token>("data")
+      |")
+
+    stream.emit("start")
+    let value = stream.consumeAll<Token>("data")
 
     let Token[] expected = [
       Token(value: "external", type: Token.Type.IDENTIFIER),
