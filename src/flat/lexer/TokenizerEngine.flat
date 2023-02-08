@@ -166,7 +166,7 @@ class {
         if (index > 0 && contents[index - 1].isNumber && contents[index + 1].isNumber) {
           var Int offset = 0
 
-          while ((index + offset + 1 < contents.count) && (contents[index + offset + 1].isNumber)) {
+          while ((index + offset + 1) < contents.count && contents[index + offset + 1].isNumber) {
             offset++
           }
 
