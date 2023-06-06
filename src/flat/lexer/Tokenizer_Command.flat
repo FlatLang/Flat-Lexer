@@ -6,17 +6,17 @@ import flat/log/Logger
 import flat/time/Timer
 
 class {
-  static Logger log = Logger(Tokenizer_Command.class)
+    static Logger log = Logger(Tokenizer_Command.class)
 
-  public static async main(String[] args) {
-    let sourceFile = File(args[1])
+    public static async main(String[] args) {
+        let sourceFile = File(args[1])
 
-    let tokenizeTimer = Timer():start()
-    let lexemeStream = Tokenizer().tokenize(sourceFile)
-    lexemeStream.on<Lexeme>("data", lexeme => log.debug(lexeme))
-    lexemeStream.waitFor("close")
-    tokenizeTimer.stop()
+        let tokenizeTimer = Timer():start()
+        let lexemeStream = Tokenizer().tokenize(sourceFile)
+        lexemeStream.on<Lexeme>("data", lexeme => log.debug(lexeme))
+        lexemeStream.waitFor("close")
+        tokenizeTimer.stop()
 
-    log.info("Done! Took #{tokenizeTimer.duration}ms")
-  }
+        log.info("Done! Took #{tokenizeTimer.duration}ms")
+    }
 }
